@@ -32,13 +32,13 @@
   },
   "invocationMethod": {
     "type": "GITHUB",
-    "org": "<GITHUB_ORG>",
-    "repo": "<GITHUB_REPO>",
+    "org": "Porterview",
+    "repo": "eks-deploy-guide",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
       "cluster_name": "{{ .inputs.\"cluster_name\" }}",
       "region": "{{ .inputs.\"region\" }}",
-      "context": {
+      "port_context": {
         "entity": "{{ .entity }}",
         "blueprint": "{{ .action.blueprint }}",
         "runId": "{{ .run.id }}",
