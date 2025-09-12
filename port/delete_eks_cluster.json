@@ -41,6 +41,5 @@
   "requiredApproval": true,
   "approvalNotification": {
     "type": "email"
-  },
-  "publish": true
+  }
 }
