@@ -3,10 +3,10 @@
 
 terraform {
   cloud {
-    organization = "your_org_name"
+    organization = "gossamer-labs"
 
     workspaces {
-      name = "your_workspace_name"
+      name = "port-guide-create-eks-cluster"
     }
   }
 
