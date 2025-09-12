@@ -33,6 +33,7 @@ jobs:
       REGION: ${{ github.event.inputs.region }}
       ACTION: ${{ github.event.inputs.action }}
       PORT_RUN_ID: ${{ fromJson(inputs.port_context).runId }}
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
     steps:
       - name: Checkout code
