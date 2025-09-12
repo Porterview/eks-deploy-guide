@@ -55,6 +55,8 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Format
         run: terraform fmt
