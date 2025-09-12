@@ -32,7 +32,7 @@ jobs:
       CLUSTER_NAME: ${{ github.event.inputs.cluster_name }}
       REGION: ${{ github.event.inputs.region }}
       ACTION: ${{ github.event.inputs.action }}
-      PORT_RUN_ID: ${{ fromJson(inputs.context).runId }}
+      PORT_RUN_ID: ${{ fromJson(inputs.port_context).runId }}
 
     steps:
       - name: Checkout code
