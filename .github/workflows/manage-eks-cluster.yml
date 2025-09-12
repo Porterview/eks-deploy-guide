@@ -13,7 +13,7 @@ on:
         description: "Action to perform (apply/destroy)"
         required: true
         default: "apply"
-      context:
+      port_context:
         required: true
         description: "Port's payload (who triggered, context, etc...)"
         type: string
