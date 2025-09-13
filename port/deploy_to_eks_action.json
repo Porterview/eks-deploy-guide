@@ -41,7 +41,7 @@
     "workflow": "build-and-deploy.yml",
     "workflowInputs": {
       "ref": "init-deploy-app",
-      "repo_url": "{{ .inputs.service.repo_url }}",
+      "repo_url": "{{ .inputs.service.properties.repo_url }}",
       "cluster": "{{ .inputs.cluster.identifier }}",
       "port_context": {
         "entity": "{{ .entity }}",
