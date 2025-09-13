@@ -1,7 +1,8 @@
 {
-  "identifier": "repository_scaffold_node_app",
-  "title": "Scaffold Node App",
-  "description": "Scaffold a node.js app",
+  "identifier": "scaffold_application",
+  "title": "Scaffold Application",
+  "icon": "Rocket",
+  "description": "Scaffold an application",
   "trigger": {
     "type": "self-service",
     "operation": "CREATE",
@@ -20,16 +21,31 @@
           "icon": "DefaultProperty",
           "title": "Repository Name",
           "type": "string"
+        },
+        "template": {
+          "icon": "DefaultProperty",
+          "type": "string",
+          "title": "Template",
+          "enum": [
+            "nodejs",
+            "python"
+          ],
+          "enumColors": {
+            "nodejs": "lightGray",
+            "python": "lightGray"
+          }
         }
       },
       "required": [
         "project_name",
-        "repo_name"
+        "repo_name",
+        "template"
       ],
       "order": [
         "project_name",
         "repo_name",
-        "description"
+        "description",
+        "template"
       ]
     },
     "blueprintIdentifier": "githubRepository"
@@ -53,6 +69,5 @@
     },
     "reportWorkflowStatus": true
   },
-  "requiredApproval": false,
-  "icon": "NodeJS"
+  "requiredApproval": false
 }
