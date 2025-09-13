@@ -25,6 +25,7 @@
       "repo": "<GITHUB_REPO>",
       "workflow": "build-and-deploy.yml",
       "workflowInputs": {
+        "ref": "main",
         "cluster": "{{.inputs.\"cluster\"}}",
         "port_context": {
           "entity": "{{ .entity }}",

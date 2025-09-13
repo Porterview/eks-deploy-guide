@@ -36,8 +36,9 @@
     "repo": "eks-deploy-guide",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
+      "ref": "main",
       "cluster_name": "{{ .inputs.\"cluster_name\" }}",
-      "region": "{{ .inputs.\"region\" }}",
+      "region": "{{ .inputs.\"region\".identifier }}",
       "port_context": {
         "entity": "{{ .entity }}",
         "blueprint": "{{ .action.blueprint }}",
@@ -47,6 +48,5 @@
     },
     "reportWorkflowStatus": true
   },
-  "requiredApproval": false,
-  "publish": true
+  "requiredApproval": false
 }

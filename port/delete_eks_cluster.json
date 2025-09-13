@@ -16,8 +16,12 @@
           "format": "entity"
         }
       },
-      "required": ["region"],
-      "order": ["region"]
+      "required": [
+        "region"
+      ],
+      "order": [
+        "region"
+      ]
     },
     "blueprintIdentifier": "eks"
   },
@@ -27,6 +31,7 @@
     "repo": "eks-deploy-guide",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
+      "ref": "main",
       "cluster_name": "{{.entity.properties.name}}",
       "region": "{{.inputs.region.identifier}}",
       "action": "destroy",
@@ -39,7 +44,9 @@
     },
     "reportWorkflowStatus": true
   },
-  "requiredApproval": true,
+  "requiredApproval": {
+    "type": "ANY"
+  },
   "approvalNotification": {
     "type": "email"
   }
