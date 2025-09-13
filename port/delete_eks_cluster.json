@@ -28,6 +28,7 @@
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
       "cluster_name": "{{.entity.properties.name}}",
+      "region": "{{.inputs.region.identifier}}",
       "action": "destroy",
       "port_context": {
         "entity": "{{ .entity }}",
