@@ -17,7 +17,7 @@ on:
         description: "Description of the app"
         required: true
         default: "A simple app"
-      context:
+      port_context:
         required: true
         description: "Port's payload (who triggered, context, etc...)"
         type: string
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PORT_RUN_ID: ${{ fromJson(github.event.inputs.context).runId }}
+      PORT_RUN_ID: ${{ fromJson(github.event.inputs.port_context).runId }}
       
 
     steps:
