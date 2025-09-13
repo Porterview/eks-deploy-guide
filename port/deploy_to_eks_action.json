@@ -7,10 +7,10 @@
     "operation": "DAY-2",
     "userInputs": {
       "properties": {
-        "repo_url": {
+        "service": {
           "icon": "DefaultProperty",
           "title": "Service",
-          "description": "The repo URL of the app you want to deploy on EKS",
+          "description": "The service you'd like to deploy on EKS",
           "type": "string",
           "blueprint": "service",
           "format": "entity"
@@ -24,8 +24,14 @@
           "format": "entity"
         }
       },
-      "required": ["repo_url", "cluster"],
-      "order": ["repo_url", "cluster"]
+      "required": [
+        "service",
+        "cluster"
+      ],
+      "order": [
+        "service",
+        "cluster"
+      ]
     }
   },
   "invocationMethod": {
@@ -34,8 +40,9 @@
     "repo": "eks-deploy-guide",
     "workflow": "build-and-deploy.yml",
     "workflowInputs": {
-      "ref": "main",
-      "cluster": "{{.inputs.\"cluster\"}}",
+      "ref": "init-deploy-app",
+      "repo_url": "{{ .inputs.service.repo_url }}",
+      "cluster": "{{ .inputs.cluster.identifier }}",
       "port_context": {
         "entity": "{{ .entity }}",
         "blueprint": "{{ .action.blueprint }}",
