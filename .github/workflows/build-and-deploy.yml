@@ -6,7 +6,7 @@ on:
       cluster:
         description: 'Deployment cluster'
         required: true
-      context:
+      port_context:
         required: true
         description: "Action and general context (blueprint, run id, etc...)"
         type: string
@@ -122,4 +122,4 @@ jobs:
         baseUrl: https://api.getport.io
         runId: ${{ fromJson(inputs.context).runId }}
         logMessage: |
-            Deployed to EKS 
+            Deployed to EKS

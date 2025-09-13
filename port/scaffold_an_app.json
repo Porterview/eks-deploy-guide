@@ -32,19 +32,19 @@
         "description"
       ]
     },
-    "blueprintIdentifier": "repository"
+    "blueprintIdentifier": "githubRepository"
   },
   "invocationMethod": {
     "type": "GITHUB",
-    "org": "phalbert",
-    "repo": "azure-resources-terraform",
+    "org": "Porterview",
+    "repo": "eks-deploy-guide",
     "workflow": "scaffold-app.yml",
     "workflowInputs": {
       "project_name": "{{.inputs.\"project_name\"}}",
       "repo_name": "{{.inputs.\"repo_name\"}}",
       "template": "{{.inputs.\"template\"}}",
       "description": "{{.inputs.\"description\"}}",
-      "context": {
+      "port_context": {
         "entity": "{{ .entity }}",
         "blueprint": "{{ .action.blueprint }}",
         "runId": "{{ .run.id }}",
@@ -54,5 +54,5 @@
     "reportWorkflowStatus": true
   },
   "requiredApproval": false,
-  "publish": true
+  "icon": "NodeJS"
 }
