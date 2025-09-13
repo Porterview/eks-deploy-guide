@@ -1,41 +1,50 @@
 {
-    "identifier": "deploy_to_eks",
-    "title": "Deploy to EKS",
-    "description": "Build and deploy an image to EKS",
-    "trigger": {
-      "type": "self-service",
-      "operation": "DAY-2",
-      "userInputs": {
-        "properties": {
-          "cluster": {
-            "type": "string",
-            "blueprint": "eks",
-            "title": "Cluster",
-            "format": "entity"
-          }
+  "identifier": "deploy_to_eks",
+  "title": "Deploy to EKS",
+  "description": "Build and deploy an image to EKS",
+  "trigger": {
+    "type": "self-service",
+    "operation": "DAY-2",
+    "userInputs": {
+      "properties": {
+        "repo_url": {
+          "icon": "DefaultProperty",
+          "title": "Service",
+          "description": "The repo URL of the app you want to deploy on EKS",
+          "type": "string",
+          "blueprint": "service",
+          "format": "entity"
         },
-        "required": [],
-        "order": []
-      },
-      "blueprintIdentifier": "eks"
-    },
-    "invocationMethod": {
-      "type": "GITHUB",
-      "org": "<GITHUB_ORG>",
-      "repo": "<GITHUB_REPO>",
-      "workflow": "build-and-deploy.yml",
-      "workflowInputs": {
-        "ref": "main",
-        "cluster": "{{.inputs.\"cluster\"}}",
-        "port_context": {
-          "entity": "{{ .entity }}",
-          "blueprint": "{{ .action.blueprint }}",
-          "runId": "{{ .run.id }}",
-          "trigger": "{{ .trigger }}"
+        "cluster": {
+          "icon": "DefaultProperty",
+          "title": "EKS Cluster",
+          "description": "Select the EKS cluster to deploy to",
+          "type": "string",
+          "blueprint": "eks",
+          "format": "entity"
         }
       },
-      "reportWorkflowStatus": true
+      "required": ["repo_url", "cluster"],
+      "order": ["repo_url", "cluster"]
+    }
+  },
+  "invocationMethod": {
+    "type": "GITHUB",
+    "org": "Porterview",
+    "repo": "eks-deploy-guide",
+    "workflow": "build-and-deploy.yml",
+    "workflowInputs": {
+      "ref": "main",
+      "cluster": "{{.inputs.\"cluster\"}}",
+      "port_context": {
+        "entity": "{{ .entity }}",
+        "blueprint": "{{ .action.blueprint }}",
+        "runId": "{{ .run.id }}",
+        "trigger": "{{ .trigger }}"
+      }
     },
-    "requiredApproval": false,
-    "publish": true
-  }
+    "reportWorkflowStatus": true
+  },
+  "requiredApproval": false,
+  "icon": "Deployment"
+}
