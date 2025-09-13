@@ -33,6 +33,10 @@ jobs:
       REGION: ${{ github.event.inputs.region }}
       ACTION: ${{ github.event.inputs.action }}
       PORT_RUN_ID: ${{ fromJson(inputs.port_context).runId }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
+      PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
 
     steps:
       - name: Checkout code

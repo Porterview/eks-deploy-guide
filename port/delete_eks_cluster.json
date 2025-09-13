@@ -23,13 +23,13 @@
   },
   "invocationMethod": {
     "type": "GITHUB",
-    "org": "your_org_name",
-    "repo": "your_repo_name",
+    "org": "Porterview",
+    "repo": "eks-deploy-guide",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
       "cluster_name": "{{.entity.properties.name}}",
       "action": "destroy",
-      "context": {
+      "port_context": {
         "entity": "{{ .entity }}",
         "blueprint": "{{ .action.blueprint }}",
         "runId": "{{ .run.id }}",
@@ -41,6 +41,5 @@
   "requiredApproval": true,
   "approvalNotification": {
     "type": "email"
-  },
-  "publish": true
+  }
 }
