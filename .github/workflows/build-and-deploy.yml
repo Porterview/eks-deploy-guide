@@ -97,7 +97,7 @@ jobs:
         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
         operation: PATCH_RUN
         baseUrl: https://api.getport.io
-        runId: ${{ fromJson(inputs.context).runId }}
+        runId: ${{ fromJson(inputs.port_context).runId }}
         logMessage: |
           Built and pushed image to ECR
 
@@ -125,6 +125,6 @@ jobs:
         operation: PATCH_RUN
         status: "SUCCESS"
         baseUrl: https://api.getport.io
-        runId: ${{ fromJson(inputs.context).runId }}
+        runId: ${{ fromJson(inputs.port_context).runId }}
         logMessage: |
             Deployed to EKS
