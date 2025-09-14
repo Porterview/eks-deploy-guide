@@ -37,10 +37,10 @@
   "invocationMethod": {
     "type": "GITHUB",
     "org": "Porterview",
-    "repo": "main",
+    "repo": "eks-deploy-guide",
     "workflow": "build-and-deploy.yml",
     "workflowInputs": {
-      "ref": "init-deploy-app",
+      "ref": "main",
       "repo_url": "{{ .inputs.service.properties.repo_url }}",
       "cluster": "{{ .inputs.cluster.identifier }}",
       "port_context": {

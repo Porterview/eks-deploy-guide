@@ -33,10 +33,10 @@
   "invocationMethod": {
     "type": "GITHUB",
     "org": "Porterview",
-    "repo": "main",
+    "repo": "eks-deploy-guide",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
-      "ref": "main",
+      "ref": "add-eks-external-auth",
       "cluster_name": "{{ .inputs.\"cluster_name\" }}",
       "region": "{{ .inputs.\"region\".identifier }}",
       "port_context": {
