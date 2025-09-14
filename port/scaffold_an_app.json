@@ -15,7 +15,8 @@
         },
         "description": {
           "title": "Description",
-          "type": "string"
+          "type": "string",
+          "default": "Scaffolded via Port"
         },
         "repo_name": {
           "icon": "DefaultProperty",
@@ -56,6 +57,7 @@
     "repo": "eks-deploy-guide",
     "workflow": "scaffold-app.yml",
     "workflowInputs": {
+      "ref": "main",
       "project_name": "{{.inputs.\"project_name\"}}",
       "repo_name": "{{.inputs.\"repo_name\"}}",
       "template": "{{.inputs.\"template\"}}",
