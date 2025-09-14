@@ -18,7 +18,7 @@
         "cluster": {
           "icon": "DefaultProperty",
           "title": "EKS Cluster",
-          "description": "Select the EKS cluster to deploy to",
+          "description": "Select the EKS cluster for deployment",
           "type": "string",
           "blueprint": "eks",
           "format": "entity"
@@ -37,7 +37,7 @@
   "invocationMethod": {
     "type": "GITHUB",
     "org": "Porterview",
-    "repo": "eks-deploy-guide",
+    "repo": "main",
     "workflow": "build-and-deploy.yml",
     "workflowInputs": {
       "ref": "init-deploy-app",

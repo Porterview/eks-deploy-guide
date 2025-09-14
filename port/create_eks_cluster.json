@@ -33,7 +33,7 @@
   "invocationMethod": {
     "type": "GITHUB",
     "org": "Porterview",
-    "repo": "eks-deploy-guide",
+    "repo": "main",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
       "ref": "main",
