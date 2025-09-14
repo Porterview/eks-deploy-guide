@@ -36,7 +36,7 @@
     "repo": "eks-deploy-guide",
     "workflow": "manage-eks-cluster.yml",
     "workflowInputs": {
-      "ref": "add-eks-external-auth",
+      "ref": "main",
       "cluster_name": "{{ .inputs.\"cluster_name\" }}",
       "region": "{{ .inputs.\"region\".identifier }}",
       "port_context": {

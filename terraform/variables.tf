@@ -1,6 +1,3 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
 variable "region" {
   description = "AWS region"
   type        = string
@@ -15,8 +12,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "Version of the EKS cluster"
   type        = string
-  default     = "1.29"
-
+  default     = "1.33"
 }
 
 variable "port_run_id" {
