@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ cookiecutter.directory_name }}-deployment
+  labels:
+    portWorkload: {{ cookiecutter.directory_name }}
 spec:
   replicas: 3
   selector:
