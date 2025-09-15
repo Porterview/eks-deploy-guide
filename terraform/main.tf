@@ -194,6 +194,25 @@ resource "aws_eks_access_policy_association" "github_actions_admin" {
 }
 
 # ------------------------
+# EKS Access Entry for Platform Engineers (SSO)
+# ------------------------
+resource "aws_eks_access_entry" "platform_engineers" {
+  count         = var.platform_engineers_role_arn != null ? 1 : 0
+  cluster_name  = module.eks.cluster_name
+  principal_arn = var.platform_engineers_role_arn
+}
+
+resource "aws_eks_access_policy_association" "platform_engineers_admin" {
+  count        = var.platform_engineers_role_arn != null ? 1 : 0
+  cluster_name = module.eks.cluster_name
+  principal_arn = var.platform_engineers_role_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  access_scope {
+    type = "cluster"
+  }
+}
+
+# ------------------------
 # EKS Managed Node Group
 # ------------------------
 module "managed_node_group_default" {

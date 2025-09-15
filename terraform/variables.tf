@@ -20,3 +20,10 @@ variable "port_run_id" {
   description = "The runID of the action run that created the entity"
   default     = ""
 }
+
+# ideally default this to null and define elsewhere
+variable "platform_engineers_role_arn" {
+  description = "IAM role ARN in 327207168534 assumed by Identity Center group 'platform-engineers'"
+  type        = string
+  default     = "arn:aws:iam::327207168534:role/aws-reserved/sso.amazonaws.com/us-east-2/AWSReservedSSO_platform-operations_2677084c3e95224d"
+}
