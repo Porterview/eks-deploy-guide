@@ -1,0 +1,7 @@
+apiVersion: v0.1
+identifier: eks-deploy-guide
+title: EKS Deploy Guide
+blueprint: service
+properties:
+  readme: file://README.md
+  url: https://github.com/Porterview/eks-deploy-guide

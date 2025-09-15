@@ -1,0 +1,211 @@
+{
+  "identifier": "eksCluster",
+  "description": "This blueprint represents an AWS EKS cluster in our software catalog",
+  "title": "EKS Cluster",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "link": {
+        "type": "string",
+        "format": "url",
+        "title": "AWS Console Link"
+      },
+      "name": {
+        "type": "string",
+        "title": "Cluster Name"
+      },
+      "version": {
+        "type": "string",
+        "title": "Kubernetes Version"
+      },
+      "status": {
+        "type": "string",
+        "title": "Cluster Status",
+        "enum": ["CREATING", "ACTIVE", "DELETING", "FAILED", "UPDATING", "PENDING"]
+      },
+      "roleArn": {
+        "type": "string",
+        "title": "IAM Role ARN"
+      },
+      "endpoint": {
+        "type": "string",
+        "format": "url",
+        "title": "API Server Endpoint"
+      },
+      "platformVersion": {
+        "type": "string",
+        "title": "EKS Platform Version"
+      },
+      "kubernetesNetworkConfig": {
+        "type": "object",
+        "title": "k8s Network Configuration",
+        "properties": {
+          "serviceIpv4Cidr": {
+            "type": "string",
+            "title": "Service IPv4 CIDR"
+          },
+          "ipFamily": {
+            "type": "string",
+            "title": "IP Family"
+          }
+        }
+      },
+      "logging": {
+        "type": "object",
+        "title": "Logging Configuration",
+        "properties": {
+          "clusterLogging": {
+            "type": "object",
+            "title": "Cluster Logging",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "title": "Enabled"
+              },
+              "types": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+                },
+                "title": "Log Types"
+              }
+            }
+          }
+        }
+      },
+      "encryptionConfig": {
+        "type": "array",
+        "title": "Encryption Configuration",
+        "items": {
+          "type": "object",
+          "properties": {
+            "resources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "title": "Resources"
+            },
+            "provider": {
+              "type": "object",
+              "properties": {
+                "keyId": {
+                  "type": "string",
+                  "title": "Key ID"
+                }
+              },
+              "title": "Provider"
+            }
+          }
+        }
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "items": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "title": "Key"
+            },
+            "value": {
+              "type": "string",
+              "title": "Value"
+            }
+          }
+        }
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN"
+      },
+      "kind": {
+        "type": "string",
+        "title": "Resource Kind"
+      },
+      "region": {
+        "type": "string",
+        "title": "AWS Region"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time",
+        "title": "Created At"
+      },
+      "clusterSecurityGroupId": {
+        "type": "string",
+        "title": "Cluster Security Group ID"
+      },
+      "vpcConfig": {
+        "type": "object",
+        "title": "VPC Configuration",
+        "properties": {
+          "subnetIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Subnet IDs"
+          },
+          "securityGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Security Group IDs"
+          },
+          "endpointConfig": {
+            "type": "object",
+            "properties": {
+              "privateAccess": {
+                "type": "boolean",
+                "title": "Private Access"
+              },
+              "publicAccess": {
+                "type": "boolean",
+                "title": "Public Access"
+              },
+              "publicAccessCidrs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Public Access CIDRs"
+              }
+            },
+            "title": "Endpoint Configuration"
+          },
+          "vpcId": {
+            "type": "string",
+            "title": "VPC ID"
+          }
+        }
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {
+    "nodeCount": {
+      "title": "Total Node Count",
+      "type": "number",
+      "calculation": ".vpcConfig.subnetIds | length"
+    },
+    "isHealthy": {
+      "title": "Is Cluster Healthy",
+      "type": "boolean",
+      "calculation": ".status == \"ACTIVE\""
+    }
+  },
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    }
+  }
+}
