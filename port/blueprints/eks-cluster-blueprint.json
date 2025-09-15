@@ -38,7 +38,7 @@
       },
       "kubernetesNetworkConfig": {
         "type": "object",
-        "title": "k8s Network Configuration",
+        "title": "K8s Network Configuration",
         "properties": {
           "serviceIpv4Cidr": {
             "type": "string",
