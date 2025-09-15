@@ -290,6 +290,18 @@ resource "aws_eks_addon" "ebs-csi" {
   ]
 }
 
+resource "aws_eks_addon" "coredns" {
+  cluster_name = module.eks.cluster_name
+  addon_name   = "coredns"
+  tags = {
+    "eks_addon" = "coredns"
+    "terraform" = "true"
+  }
+  depends_on = [
+    module.managed_node_group_default
+  ]
+}
+
 # ------------------------
 # Port entity
 # ------------------------
