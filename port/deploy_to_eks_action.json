@@ -18,7 +18,7 @@
         "cluster": {
           "icon": "DefaultProperty",
           "title": "EKS Cluster",
-          "description": "Select the EKS cluster to deploy to",
+          "description": "Select the EKS cluster for deployment",
           "type": "string",
           "blueprint": "eks",
           "format": "entity"
@@ -40,7 +40,7 @@
     "repo": "eks-deploy-guide",
     "workflow": "build-and-deploy.yml",
     "workflowInputs": {
-      "ref": "init-deploy-app",
+      "ref": "main",
       "repo_url": "{{ .inputs.service.properties.repo_url }}",
       "cluster": "{{ .inputs.cluster.identifier }}",
       "port_context": {
