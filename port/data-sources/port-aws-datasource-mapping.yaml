@@ -1,0 +1,291 @@
+resources:
+  - kind: AWS::Organizations::Account
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Id
+          title: .Name
+          blueprint: '"awsAccount"'
+          properties:
+            arn: .Arn
+            email: .Email
+            status: .Status
+            joined_method: .JoinedMethod
+            joined_timestamp: .JoinedTimestamp
+  - kind: AWS::S3::Bucket
+    selector:
+      query: 'true'
+      useGetResourceAPI: true
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Identifier
+          blueprint: '"cloudResource"'
+          properties:
+            kind: .__Kind
+            region: >-
+              .Properties.RegionalDomainName |
+              capture(".*\\.(?<region>[^\\.]+)\\.amazonaws\\.com") | .region
+            tags: .Properties.Tags
+            arn: .Properties.Arn
+            link: >-
+              .Properties | select(.Arn != null) |
+              "https://console.aws.amazon.com/go/view?arn=" + .Arn
+          relations:
+            account: .__AccountId
+  - kind: AWS::EC2::Instance
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Identifier
+          blueprint: '"cloudResource"'
+          properties:
+            kind: .__Kind
+            region: .__Region
+            tags: .Properties.Tags
+            arn: .Properties.Arn
+            link: >-
+              .Properties | select(.Arn != null) |
+              "https://console.aws.amazon.com/go/view?arn=" + .Arn
+          relations:
+            account: .__AccountId
+  - kind: AWS::AutoScaling::AutoScalingGroup
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.AutoScalingGroupName
+          blueprint: '"autoScalingGroup"'
+          properties:
+            link: >-
+              'https://console.aws.amazon.com/ec2/home?region=' + .__Region +
+              '#AutoScalingGroupDetails:id=' + .Properties.AutoScalingGroupName
+              + ';view=details'
+            desiredCapacity: .Properties.DesiredCapacity
+            minSize: .Properties.MinSize
+            maxSize: .Properties.MaxSize
+            arn: .Properties.AutoScalingGroupARN
+            role: >-
+              'https://console.aws.amazon.com/go/view?arn=' +
+              .Properties.ServiceLinkedRoleARN
+            kind: .__Kind
+            region: .__Region
+          relations:
+            account: .__AccountId
+  - kind: AWS::CloudFront::Distribution
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.DomainName
+          blueprint: '"cloudFrontDistribution"'
+          properties:
+            link: >-
+              'https://console.aws.amazon.com/cloudfront/home?region=' +
+              .__Region + '#/distribution/' + .Properties.Id
+            status: .Properties.Status
+            domainName: .Properties.DomainName
+            lastModifiedTime: .Properties.LastModifiedTime
+            allowedMethods: .Properties.DefaultCacheBehavior.AllowedMethods
+            originDomainNames: .Properties.Origins[].DomainName
+            originIds: .Properties.Origins[].Id
+            enabled: .Properties.Enabled
+            isIpv6Enabled: .Properties.IPV6Enabled
+            httpVersion: .Properties.HttpVersion
+            isStaging: .Properties.Staging
+            kind: .__Kind
+            region: .__Region
+          relations:
+            account: .__AccountId
+  - kind: AWS::RDS::DBInstance
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.DBInstanceIdentifier
+          blueprint: '"rdsInstance"'
+          properties:
+            link: >-
+              'https://console.aws.amazon.com/go/view?arn=' +
+              .Properties.DBInstanceArn
+            dbInstanceClass: .Properties.DBInstanceClass
+            dbInstanceStatus: .Properties.DBInstanceStatus
+            engine: .Properties.Engine
+            storageType: .Properties.StorageType
+            engineVersion: .Properties.EngineVersion
+            port: .Properties.Endpoint.Port
+            allocatedStorage: .Properties.AllocatedStorage
+            endpoint: .Properties.Endpoint.Address
+            multiAZ: .Properties.MultiAZ
+            deletionProtection: .Properties.DeletionProtection
+            availabilityZone: .Properties.AvailabilityZone
+            masterUsername: .Properties.MasterUsername
+            publicAccess: .Properties.PubliclyAccessible
+            vpcSecurityGroups: .Properties.VpcSecurityGroups
+            arn: .Properties.DBInstanceArn
+          relations:
+            account: .__AccountId
+  - kind: AWS::DynamoDB::Table
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.TableName
+          blueprint: '"dynamoDBTable"'
+          properties:
+            link: '''https://console.aws.amazon.com/go/view?arn='' + .Properties.Arn'
+            tableStatus: .Properties.TableStatus
+            itemCount: .Properties.ItemCount
+            creationDateTime: .Properties.CreationDateTime
+            billingMode: .Properties.BillingMode
+            writeCapacityUnits: .Properties.ProvisionedThroughput.WriteCapacityUnits
+            readCapacityUnits: .Properties.ProvisionedThroughput.ReadCapacityUnits
+            timeToLive: .Properties.TimeToLiveSpecification.Enabled
+            pointInTimeRecovery: >-
+              .Properties.PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled
+            deletionProtection: .Properties.DeletionProtectionEnabled
+            arn: .Properties.Arn
+            kind: .__Kind
+            region: .__Region
+          relations:
+            account: .__AccountId
+  - kind: AWS::ElastiCache::ServerlessCache
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.ServerlessCacheName
+          blueprint: '"elasticacheServerless"'
+          properties:
+            link: '''https://console.aws.amazon.com/go/view?arn='' + .Properties.ARN'
+            engine: .Properties.Engine
+            engineVersion: .Properties.FullEngineVersion
+            status: .Properties.Status
+            description: .Properties.Description
+            createTime: .Properties.CreateTime
+            securityGroupIds: .Properties.SecurityGroupIds
+            subnetIds: .Properties.SubnetIds
+            endpoint: .Properties.Endpoint.Address
+            port: .Properties.Endpoint.Port
+            readerEndpoint: .Properties.ReaderEndpoint.Address
+            readerPort: .Properties.ReaderEndpoint.Port
+            dailySnapshotTime: .Properties.DailySnapshotTime
+            snapshotRetentionLimit: .Properties.SnapshotRetentionLimit
+            serverlessCacheName: .Properties.ServerlessCacheName
+            arn: .Properties.ARN
+            kind: .__Kind
+            region: .__Region
+          relations:
+            account: .__AccountId
+  - kind: AWS::SQS::Queue
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier | split("/")[4]
+          title: .Properties.QueueUrl | split("/")[4]
+          blueprint: '"sqs"'
+          properties:
+            kind: .__Kind
+            region: .__Region
+            link: .Properties.QueueUrl
+          relations:
+            account: .__AccountId
+  - kind: AWS::Lambda::Function
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.FunctionName
+          blueprint: '"lambda"'
+          properties:
+            kind: .__Kind
+            region: .__Region
+            link: '''https://console.aws.amazon.com/go/view?arn='' + .Properties.Arn'
+            description: .Properties.Description
+            memorySize: .Properties.MemorySize
+            ephemeralStorageSize: .Properties.EphemeralStorage.Size
+            timeout: .Properties.Timeout
+            runtime: .Properties.Runtime
+            packageType: .Properties.PackageType
+            environment: .Properties.Environment
+            architectures: .Properties.Architectures
+            layers: .Properties.Layers
+            tags: .Properties.Tags
+            iamRole: '''https://console.aws.amazon.com/go/view?arn='' + .Properties.Role'
+            arn: .Properties.Arn
+          relations:
+            account: .__AccountId
+  - kind: AWS::SNS::Topic
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.TopicName
+          blueprint: '"snsTopic"'
+          properties:
+            link: >-
+               'https://console.aws.amazon.com/go/view?arn=' +
+                .Properties.TopicArn
+            arn: .Properties.TopicArn
+            kind: .__Kind
+            region: .__Region
+          relations:
+            account: .__AccountId
+  - kind: AWS::EKS::Cluster
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.Name
+          blueprint: '"eksCluster"'
+          properties:
+            link: >-
+              'https://console.aws.amazon.com/eks/home?region=' + .__Region +
+              '#/clusters/' + .Properties.Name
+            name: .Properties.Name
+            version: .Properties.Version
+            status: .Properties.Status
+            roleArn: .Properties.RoleArn
+            endpoint: .Properties.Endpoint
+            platformVersion: .Properties.PlatformVersion
+            kubernetesNetworkConfig: .Properties.KubernetesNetworkConfig
+            logging: .Properties.Logging
+            encryptionConfig: .Properties.EncryptionConfig
+            tags: .Properties.Tags
+            arn: .Properties.Arn
+            kind: .__Kind
+            region: .__Region
+            createdAt: .Properties.CreatedAt
+            clusterSecurityGroupId: .Properties.ClusterSecurityGroupId
+            vpcConfig: .Properties.ResourcesVpcConfig
+          relations:
+            account: .__AccountId
