@@ -14,23 +14,23 @@ on:
       template:
         description: "Template to use for the app"
         required: false
-        default: "nodejs"
         type: string
+        default: "nodejs"
       description:
         description: "Description of the app"
         required: true
+        type: string
         default: "A simple app"
-        type: string
-      ref:
-        description: "Branch to run from"
-        required: false
-        default: "main"
-        type: string
       port_context:
         description: "Port's payload (who triggered, context, etc...)"
         required: true
-        default: "{}" # enables manual action trigger
-        #type: string
+        # type: string
+        # default: "{}" # enables manual action trigger
+      # ref:
+      #   description: "Branch to run from"
+      #   required: false
+      #   default: "main"
+      #   type: string
 
 jobs:
   scaffold_app:
