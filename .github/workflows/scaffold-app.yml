@@ -6,20 +6,30 @@ on:
       project_name:
         description: "Name of the app"
         required: true
+        type: string
       repo_name:
         description: "Slug of the app"
         required: true
+        type: string
       template:
-          description: "Template to use for the app"
-          required: false
-          default: "nodejs"
+        description: "Template to use for the app"
+        required: false
+        default: "nodejs"
+        type: string
       description:
         description: "Description of the app"
         required: true
         default: "A simple app"
+        type: string
+      ref:
+        description: "Branch to run from"
+        required: false
+        default: "main"
+        type: string
       port_context:
-        required: true
         description: "Port's payload (who triggered, context, etc...)"
+        required: true
+        default: "{}" # enables manual action trigger
         type: string
 
 jobs:
@@ -28,7 +38,6 @@ jobs:
 
     env:
       PORT_RUN_ID: ${{ fromJson(github.event.inputs.port_context).runId }}
-      
 
     steps:
       - name: Create a log message (post-action)

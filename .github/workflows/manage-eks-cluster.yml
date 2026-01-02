@@ -90,7 +90,6 @@ jobs:
           TF_VAR_port_run_id: ${{ env.PORT_RUN_ID }}
 
       - name: Inform Port about the status of the EKS cluster creation
-        if: ${{ github.event.inputs.action == 'apply' }}
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -99,16 +98,9 @@ jobs:
           operation: PATCH_RUN
           status: "SUCCESS"
           runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "EKS cluster creation has been completed: ${{ env.CLUSTER_NAME }}"
-
-      - name: Inform Port about the status of the EKS cluster destruction
-        if: ${{ github.event.inputs.action == 'destroy' }}
-        uses: port-labs/port-github-action@v1
-        with:
-          clientId: ${{ secrets.PORT_CLIENT_ID }}
-          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
-          baseUrl: https://api.getport.io
-          operation: PATCH_RUN
-          status: "SUCCESS"
-          runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "EKS cluster destruction has been completed: ${{ env.CLUSTER_NAME }}"
+          logMessage: "${
+            if eq(github.event.inputs.action, 'apply')
+              'EKS cluster creation has been completed: ${{ github.event.inputs.cluster_name }}'
+            else
+              'EKS cluster destruction has been completed: ${{ github.event.inputs.cluster_name }}'
+            }"
