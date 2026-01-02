@@ -13,18 +13,23 @@ on:
         type: string
       template:
         description: "Template to use for the app"
-        default: "nodejs"
         required: false
+        default: "nodejs"
         type: string
       description:
         description: "Description of the app"
-        default: "A simple app"
         required: true
+        default: "A simple app"
+        type: string
+      ref:
+        description: "Branch to run from"
+        required: false
+        default: "main"
         type: string
       port_context:
         description: "Port's payload (who triggered, context, etc...)"
-        default: "{}" # enables manual action trigger
         required: true
+        default: "{}" # enables manual action trigger
         type: string
 
 jobs:
