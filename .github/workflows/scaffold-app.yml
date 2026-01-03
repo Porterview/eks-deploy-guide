@@ -24,7 +24,7 @@ on:
       port_context:
         description: "Port's payload (who triggered, context, etc...)"
         required: true
-        # type: string
+        type: string
         # default: "{}" # enables manual action trigger
       # ref:
       #   description: "Branch to run from"
