@@ -1,8 +1,12 @@
-apiVersion: v0.1
 identifier: {{ cookiecutter.directory_name }}
 title: {{ cookiecutter.project_name }}
 blueprint: service
 properties:
+  description: templated-description
   language: nodejs
+  lifecycle: templated-lifecycle
   readme: file://README.md
   url: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.directory_name }}
+relations:
+  repository: {{ cookiecutter.github_username }}/{{ cookiecutter.directory_name }}
+  team: templated-team
