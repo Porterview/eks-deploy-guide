@@ -144,6 +144,25 @@ jobs:
             exit 1
           fi
 
+      - name: Add platform-operations team as admin
+        if: ${{ env.repo_exists == 'false' }}
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.CREATOR_TOKEN }}" \
+            -d '{"permission": "admin"}' \
+            "https://api.github.com/orgs/${{ github.repository_owner }}/teams/platform-operations/repos/${{ github.repository_owner }}/${{ github.event.inputs.repo_name }}")
+
+          echo "HTTP Status: $HTTP_STATUS"
+
+          if [ $HTTP_STATUS -eq 204 ]; then
+            echo "Team access added successfully."
+          else
+            echo "Failed to add team access. HTTP Status: $HTTP_STATUS"
+            exit 1
+          fi
+
       - name: Create a log message (post-action)
         uses: port-labs/port-github-action@v1
         with:
