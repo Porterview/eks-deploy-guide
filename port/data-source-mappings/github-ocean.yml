@@ -1,0 +1,318 @@
+createMissingRelatedEntities: true
+resources:
+  - kind: organization
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .login
+          title: .login
+          blueprint: '"githubOrganization"'
+          properties:
+            login: .login
+            id: .id
+            nodeId: .node_id
+            url: .url
+            reposUrl: .repos_url
+            eventsUrl: .events_url
+            hooksUrl: .hooks_url
+            issuesUrl: .issues_url
+            membersUrl: .members_url
+            publicMembersUrl: .public_members_url
+            avatarUrl: .avatar_url
+            description: if .description then .description else "" end
+  - kind: team
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .id | tostring
+          title: .name
+          blueprint: '"githubTeam"'
+          properties:
+            slug: .slug
+            name: .name
+            description: .description
+            link: .html_url
+            permission: .permission
+            notification_setting: .notificationSetting
+  - kind: user
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .login
+          title: .login
+          blueprint: '"githubUser"'
+          properties:
+            email: .email
+  - kind: repository
+    selector:
+      query: 'true'
+      include:
+        - teams
+    port:
+      entity:
+        mappings:
+          identifier: .name
+          title: .name
+          blueprint: '"githubRepository"'
+          properties:
+            readme: file://README.md
+            url: .html_url
+            defaultBranch: .default_branch
+            language: if .language then .language else "" end
+          relations:
+            organization: .owner.login
+            githubTeams: '[.__teams[].id | tostring]'
+  - kind: tag
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .name
+          title: .name
+          blueprint: '"githubTag"'
+          properties:
+            commit_sha: .commit.sha
+          relations:
+            repository: .__repository
+  - kind: release
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .name
+          title: .name
+          blueprint: '"githubRelease"'
+          properties:
+            author: .author.login
+            description: .body
+            release_creation_time: .created_at
+          relations:
+            tag: .tag_name
+            repository: .__repository
+  - kind: branch
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .__repository + "_" + .name
+          title: .name
+          blueprint: '"githubBranch"'
+          properties:
+            is_protected: .protected
+            commit_sha: .commit.sha
+            commit_url: .commit.url
+          relations:
+            repository: .__repository
+  - kind: branch
+    selector:
+      query: 'true'
+      detailed: true
+    port:
+      entity:
+        mappings:
+          identifier: .__repository + "_" + .name
+          blueprint: '"githubBranch"'
+          properties:
+            last_contributor: .commit.commit.author.email | ascii_downcase
+            last_push: .commit.commit.committer.date
+          relations:
+            repository: .__repository
+  - kind: pull-request
+    selector:
+      query: 'true'
+      state: open
+    port:
+      entity:
+        mappings:
+          identifier: .id|tostring
+          title: .title
+          blueprint: '"githubPullRequest"'
+          properties:
+            status: .state
+            closedAt: .closed_at
+            updatedAt: .updated_at
+            mergedAt: .merged_at
+            createdAt: .created_at
+            prNumber: .number
+            link: .html_url
+            branch: .head.ref
+            leadTimeHours: >-
+              (.created_at as $createdAt | .merged_at as $mergedAt | ($createdAt
+              | sub("\\..*Z$"; "Z") | strptime("%Y-%m-%dT%H:%M:%SZ") | mktime)
+              as $createdTimestamp | ($mergedAt | if . == null then null else
+              sub("\\..*Z$"; "Z") | strptime("%Y-%m-%dT%H:%M:%SZ") | mktime end)
+              as $mergedTimestamp | if $mergedTimestamp == null then null else
+              (((($mergedTimestamp - $createdTimestamp) / 3600) * 100 | floor) /
+              100) end)
+          relations:
+            repository: .__repository
+            organization: .__organization
+  - kind: pull-request
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .id|tostring
+          blueprint: '"githubPullRequest"'
+          properties: {}
+          relations:
+            repository: .__repository
+            git_hub_assignees: '[.assignees[].login]'
+            git_hub_reviewers: '[.requested_reviewers[].login]'
+            git_hub_creator: .user.login
+            creator:
+              combinator: '"and"'
+              rules:
+                - property: '"git_hub_username"'
+                  operator: '"="'
+                  value: .user.login
+            service:
+              combinator: '"and"'
+              rules:
+                - property: '"repo_id"'
+                  operator: '"="'
+                  value: .__repository
+            reviewers:
+              combinator: '"and"'
+              rules:
+                - property: '"git_hub_username"'
+                  operator: '"in"'
+                  value: '[.requested_reviewers[].login]'
+            assignees:
+              combinator: '"and"'
+              rules:
+                - property: '"git_hub_username"'
+                  operator: '"in"'
+                  value: '[.assignees[].login]'
+  - kind: workflow
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .__repository + (.id|tostring)
+          title: .name
+          blueprint: '"githubWorkflow"'
+          properties:
+            path: .path
+            status: .state
+            createdAt: .created_at
+            updatedAt: .updated_at
+            link: .html_url
+          relations:
+            repository: .__repository
+  - kind: workflow-run
+    selector:
+      query: .status != "completed"
+    port:
+      entity:
+        mappings:
+          identifier: .repository.name + (.id|tostring)
+          title: .display_title
+          blueprint: '"githubWorkflowRun"'
+          properties:
+            name: .name
+            triggeringActor: .triggering_actor.login
+            status: .status
+            conclusion: .conclusion
+            createdAt: .created_at
+            runStartedAt: .run_started_at
+            updatedAt: .updated_at
+            deletedAt: .deleted_at
+            runNumber: .run_number
+            runAttempt: .run_attempt
+            link: .html_url
+          relations:
+            workflow: .repository.name + (.workflow_id|tostring)
+  - kind: file
+    selector:
+      query: 'true'
+      files:
+        - path: '**/CODEOWNERS'
+          skipParsing: true
+    port:
+      itemsToParse: "(. as $root | .content | split(\"\\n\") |\n\t\t\t\t\t\t\tmap(gsub(\"^[[:space:]]+|[[:space:]]+$\"; \"\")) |\n\t\t\t\t\t\t\tmap(select((test(\"^[[:space:]]*#\") | not) and (length > 0))) | map(\n\t\t\t\t\t\t\t\t(split(\" \") | map(select(length > 0))) as $tokens\n\t\t\t\t\t\t\t\t| {\n\t\t\t\t\t\t\t\t\tscope: ($tokens[0]),\n\t\t\t\t\t\t\t\t\tidentifier: ($tokens[0]\n\t\t\t\t\t\t\t\t\t\t| gsub(\"\\*\\*\"; \"doublestar\")\n\t\t\t\t\t\t\t\t\t\t| gsub(\"\\*\"; \"star\")),\n\t\t\t\t\t\t\t\t\tusers: ($tokens[1:] | map(select(contains(\"/\") | not) | gsub(\"@\"; \"\"))),\n\t\t\t\t\t\t\t\t\tteams: ($tokens[1:] | map(select(test(\"^@[^ ]+/[^ ]+$\")) | split(\"/\") | .[-1])),\n\t\t\t\t\t\t\t\t\trepoName: $root.repository.name,\n\t\t\t\t\t\t\t\t\tfilePath: $root.metadata.path\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t)"
+      entity:
+        mappings:
+          identifier: .item.repoName + "_" + .item.identifier + "_codeowners"
+          title: .item.scope + " codeowners"
+          blueprint: '"githubCodeowners"'
+          properties:
+            scope: .item.scope
+            location: .item.filePath
+            users: .item.users
+            teams: .item.teams
+          relations:
+            repository: .item.repoName
+  - kind: dependabot-alert
+    selector:
+      query: 'true'
+      states:
+        - open
+        - fixed
+    port:
+      entity:
+        mappings:
+          identifier: .__repository + "/" + (.number | tostring)
+          title: .number | tostring
+          blueprint: '"githubDependabotAlert"'
+          properties:
+            state: .state
+            severity: .security_advisory.severity
+            packageName: .dependency.package.name
+            packageEcosystem: .dependency.package.ecosystem
+            manifestPath: .dependency.manifest_path
+            scope: .dependency.scope
+            ghsaID: .security_advisory.ghsa_id
+            cveID: .security_advisory.cve_id
+            url: .html_url
+            references: '[.security_advisory.references[].url]'
+            alertCreatedAt: .created_at
+            alertUpdatedAt: .updated_at
+          relations:
+            repository: .__repository
+  - kind: code-scanning-alerts
+    selector:
+      query: 'true'
+      state: dismissed
+    port:
+      entity:
+        mappings:
+          identifier: .__repository + "/" + (.number | tostring)
+          title: .rule.name
+          blueprint: '"githubCodeScanAlert"'
+          properties:
+            state: .state
+            severity: .rule.severity
+            tags: .rule.tags
+            description: .rule.description
+            url: .html_url
+          relations:
+            repository: .__repository
+  - kind: secret-scanning-alerts
+    selector:
+      query: 'true'
+      state: all
+      hideSecret: false
+    port:
+      entity:
+        mappings:
+          identifier: .__repository + "/" + (.number | tostring)
+          title: .number | tostring
+          blueprint: '"githubSecretScanAlert"'
+          properties:
+            state: .state
+            secret_type: .rule.secret_type
+            url: .url
+          relations:
+            repository: .__repository
