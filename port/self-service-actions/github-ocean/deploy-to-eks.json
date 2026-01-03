@@ -1,0 +1,58 @@
+{
+  "identifier": "deploy_to_eks",
+  "title": "Deploy to EKS",
+  "icon": "Deployment",
+  "description": "Build and deploy an image to EKS",
+  "trigger": {
+    "type": "self-service",
+    "operation": "DAY-2",
+    "userInputs": {
+      "properties": {
+        "service": {
+          "icon": "DefaultProperty",
+          "title": "Service",
+          "description": "The service you'd like to deploy on EKS",
+          "type": "string",
+          "blueprint": "service",
+          "format": "entity"
+        },
+        "cluster": {
+          "icon": "DefaultProperty",
+          "title": "EKS Cluster",
+          "description": "Select the EKS cluster for deployment",
+          "type": "string",
+          "blueprint": "eks",
+          "format": "entity"
+        }
+      },
+      "required": [
+        "service",
+        "cluster"
+      ],
+      "order": [
+        "service",
+        "cluster"
+      ]
+    }
+  },
+  "invocationMethod": {
+    "type": "INTEGRATION_ACTION",
+    "installationId": "gh-ocean",
+    "integrationActionType": "dispatch_workflow",
+    "integrationActionExecutionProperties": {
+      "org": "Porterview",
+      "repo": "eks-deploy-guide",
+      "workflow": "scaffold-app.yml",
+      "workflowInputs": {
+        "project_name": "{{.inputs.\"project_name\"}}",
+        "repo_name": "{{.inputs.\"repo_name\"}}",
+        "template": "{{.inputs.\"template\"}}",
+        "description": "{{.inputs.\"description\"}}",
+        "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"
+      },
+      "reportWorkflowStatus": true
+    }
+  },
+  "requiredApproval": false,
+  "allowAnyoneToViewRuns": true
+}

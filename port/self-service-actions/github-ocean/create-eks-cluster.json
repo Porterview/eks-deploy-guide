@@ -1,0 +1,53 @@
+{
+  "identifier": "eks_create_eks_cluster",
+  "title": "Create EKS cluster",
+  "icon": "AmazonEKS",
+  "description": "An action that creates an eks cluster",
+  "trigger": {
+    "type": "self-service",
+    "operation": "CREATE",
+    "userInputs": {
+      "properties": {
+        "cluster_name": {
+          "title": "Cluster Name",
+          "description": "The name of the EKS Cluster",
+          "icon": "AmazonEKS",
+          "type": "string"
+        },
+        "region": {
+          "type": "string",
+          "blueprint": "region",
+          "title": "Region",
+          "format": "entity"
+        }
+      },
+      "required": [
+        "cluster_name"
+      ],
+      "order": [
+        "cluster_name"
+      ]
+    },
+    "blueprintIdentifier": "eks"
+  },
+  "invocationMethod": {
+    "type": "INTEGRATION_ACTION",
+    "installationId": "gh-ocean",
+    "integrationActionType": "dispatch_workflow",
+    "integrationActionExecutionProperties": {
+      "org": "Porterview",
+      "repo": "eks-deploy-guide",
+      "workflow": "scaffold-app.yml",
+      "workflowInputs": {
+        "project_name": "{{.inputs.\"project_name\"}}",
+        "repo_name": "{{.inputs.\"repo_name\"}}",
+        "template": "{{.inputs.\"template\"}}",
+        "description": "{{.inputs.\"description\"}}",
+        "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"
+      },
+      "reportWorkflowStatus": true
+    }
+  },
+  "requiredApproval": false,
+  "allowAnyoneToViewRuns": true
+}

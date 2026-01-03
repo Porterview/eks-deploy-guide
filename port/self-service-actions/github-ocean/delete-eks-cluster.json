@@ -1,0 +1,53 @@
+{
+  "identifier": "eks_delete_eks_cluster",
+  "title": "Delete EKS cluster",
+  "icon": "AmazonEKS",
+  "description": "An action that deletes an eks cluster",
+  "trigger": {
+    "type": "self-service",
+    "operation": "DELETE",
+    "userInputs": {
+      "properties": {
+        "region": {
+          "icon": "DefaultProperty",
+          "title": "Region",
+          "type": "string",
+          "blueprint": "region",
+          "format": "entity"
+        }
+      },
+      "required": [
+        "region"
+      ],
+      "order": [
+        "region"
+      ]
+    },
+    "blueprintIdentifier": "eks"
+  },
+  "invocationMethod": {
+    "type": "INTEGRATION_ACTION",
+    "installationId": "gh-ocean",
+    "integrationActionType": "dispatch_workflow",
+    "integrationActionExecutionProperties": {
+      "org": "Porterview",
+      "repo": "eks-deploy-guide",
+      "workflow": "scaffold-app.yml",
+      "workflowInputs": {
+        "project_name": "{{.inputs.\"project_name\"}}",
+        "repo_name": "{{.inputs.\"repo_name\"}}",
+        "template": "{{.inputs.\"template\"}}",
+        "description": "{{.inputs.\"description\"}}",
+        "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"
+      },
+      "reportWorkflowStatus": true
+    }
+  },
+  "requiredApproval": {
+    "type": "ANY"
+  },
+  "approvalNotification": {
+    "type": "email"
+  },
+  "allowAnyoneToViewRuns": true
+}
