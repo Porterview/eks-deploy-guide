@@ -1,0 +1,22 @@
+# This is a comment. Lines starting with # are ignored.
+# The order of rules matters: the last matching pattern takes precedence.
+
+# Default owners for the entire repository if no other pattern matches
+# *       @global-owner1 @org/global-team
+
+# Assign all files in the 'apps/frontend' directory to the frontend team
+# /apps/frontend/    @org/frontend-team
+
+# Specific file types: assign all '.js' files in the 'utils' folder to a specific user
+# /utils/*.js        @js-expert-username
+
+# Grant a specific team ownership over documentation files
+# docs/*             @org/docs-team
+
+# Exclude a specific subdirectory from the general docs rule above
+# /docs/internal/    @org/internal-team
+
+# Another example: Node.js files in the root directory
+# /*.mjs             @nodejs-owners
+
+*       @Porterview/platform-operations
