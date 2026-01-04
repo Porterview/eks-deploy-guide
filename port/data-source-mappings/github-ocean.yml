@@ -1,4 +1,5 @@
 createMissingRelatedEntities: true
+enableMergeEntity: true  # Note: resyncs re‑parse port.yml
 resources:
   - kind: organization
     selector:
@@ -234,26 +235,6 @@ resources:
             link: .html_url
           relations:
             workflow: .repository.name + (.workflow_id|tostring)
-  - kind: file
-    selector:
-      query: 'true'
-      files:
-        - path: '**/CODEOWNERS'
-          skipParsing: true
-    port:
-      itemsToParse: "(. as $root | .content | split(\"\\n\") |\n\t\t\t\t\t\t\tmap(gsub(\"^[[:space:]]+|[[:space:]]+$\"; \"\")) |\n\t\t\t\t\t\t\tmap(select((test(\"^[[:space:]]*#\") | not) and (length > 0))) | map(\n\t\t\t\t\t\t\t\t(split(\" \") | map(select(length > 0))) as $tokens\n\t\t\t\t\t\t\t\t| {\n\t\t\t\t\t\t\t\t\tscope: ($tokens[0]),\n\t\t\t\t\t\t\t\t\tidentifier: ($tokens[0]\n\t\t\t\t\t\t\t\t\t\t| gsub(\"\\*\\*\"; \"doublestar\")\n\t\t\t\t\t\t\t\t\t\t| gsub(\"\\*\"; \"star\")),\n\t\t\t\t\t\t\t\t\tusers: ($tokens[1:] | map(select(contains(\"/\") | not) | gsub(\"@\"; \"\"))),\n\t\t\t\t\t\t\t\t\tteams: ($tokens[1:] | map(select(test(\"^@[^ ]+/[^ ]+$\")) | split(\"/\") | .[-1])),\n\t\t\t\t\t\t\t\t\trepoName: $root.repository.name,\n\t\t\t\t\t\t\t\t\tfilePath: $root.metadata.path\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t)"
-      entity:
-        mappings:
-          identifier: .item.repoName + "_" + .item.identifier + "_codeowners"
-          title: .item.scope + " codeowners"
-          blueprint: '"githubCodeowners"'
-          properties:
-            scope: .item.scope
-            location: .item.filePath
-            users: .item.users
-            teams: .item.teams
-          relations:
-            repository: .item.repoName
   - kind: dependabot-alert
     selector:
       query: 'true'
@@ -316,3 +297,31 @@ resources:
             url: .url
           relations:
             repository: .__repository
+  ## Note: when trying to map additional properties for kind: file, 
+  ## error: "must NOT have additional properties..."
+  - kind: file
+    selector:
+      query: 'true'
+      files:
+        - path: port.yml
+    port:
+      entity:
+        mappings:
+          identifier: .content.identifier
+          title: .content.title
+          blueprint: '"service"'
+          relations:
+            repository: .content.relations.repository
+  - kind: file
+    selector:
+      query: 'true'
+      files:
+        - path: '.github/CODEOWNERS'
+    port:
+      entity:
+        mappings:
+          identifier: .repository.name + "_" + .name
+          title: .repository.name + " " + .name
+          blueprint: '"githubCodeowners"'
+          relations:
+            repository: .repository.name
