@@ -38,7 +38,6 @@
       "org": "Porterview",
       "repo": "eks-deploy-guide",
       "workflow": "manage-eks-cluster.yml",
-      "ref": "main",
       "workflowInputs": {
         "cluster_name": "{{ .inputs.\"cluster_name\" }}",
         "region": "{{ .inputs.\"region\".identifier }}",
