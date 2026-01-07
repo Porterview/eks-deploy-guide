@@ -28,7 +28,7 @@
         "cluster_name"
       ]
     },
-    "blueprintIdentifier": "eks"
+    "blueprintIdentifier": "eksCluster"
   },
   "invocationMethod": {
     "type": "INTEGRATION_ACTION",
@@ -37,12 +37,10 @@
     "integrationActionExecutionProperties": {
       "org": "Porterview",
       "repo": "eks-deploy-guide",
-      "workflow": "scaffold-app.yml",
+      "workflow": "manage-eks-cluster.yml",
       "workflowInputs": {
-        "project_name": "{{.inputs.\"project_name\"}}",
-        "repo_name": "{{.inputs.\"repo_name\"}}",
-        "template": "{{.inputs.\"template\"}}",
-        "description": "{{.inputs.\"description\"}}",
+        "cluster_name": "{{ .inputs.\"cluster_name\" }}",
+        "region": "{{ .inputs.\"region\".identifier }}",
         "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"
       },
       "reportWorkflowStatus": true
