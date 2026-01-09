@@ -329,7 +329,7 @@ resource "aws_eks_addon" "coredns" {
 resource "port_entity" "eks_cluster" {
   identifier = module.eks.cluster_arn
   title      = module.eks.cluster_name
-  blueprint  = "eks"
+  blueprint  = "eksCluster"
   properties = {
     string_props = {
       "version"  = module.eks.cluster_version
