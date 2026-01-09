@@ -92,6 +92,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 # ------------------------
 # IAM Role for GitHub Actions
 # ------------------------
+# NOTE: This repo whitelist should be defined in a variable
 data "aws_iam_policy_document" "k8s_deployers_assume_role" {
   statement {
     effect = "Allow"
@@ -119,9 +120,29 @@ resource "aws_iam_role" "k8s_deployers_gha" {
   assume_role_policy = data.aws_iam_policy_document.k8s_deployers_assume_role.json
 }
 
+data "aws_iam_policy_document" "eks_describe" {
+  statement {
+    sid    = "EksDescribe"
+    effect = "Allow"
+
+    actions = [
+      "eks:DescribeCluster",
+      "eks:DescribeUpdate"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "eks_describe" {
+  name        = "eks-describe"
+  description = "Policy to allow EKS cluster describe operations"
+  policy      = data.aws_iam_policy_document.eks_describe.json
+}
+
 resource "aws_iam_role_policy_attachment" "eks_describe" {
   role       = aws_iam_role.k8s_deployers_gha.name
-  policy_arn = "arn:aws:iam::327207168534:policy/eks-describe"
+  policy_arn = aws_iam_policy.eks_describe.arn
 }
 
 # ------------------------
@@ -308,7 +329,7 @@ resource "aws_eks_addon" "coredns" {
 resource "port_entity" "eks_cluster" {
   identifier = module.eks.cluster_arn
   title      = module.eks.cluster_name
-  blueprint  = "eks"
+  blueprint  = "eksCluster"
   properties = {
     string_props = {
       "version"  = module.eks.cluster_version
