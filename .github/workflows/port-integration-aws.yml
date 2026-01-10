@@ -61,7 +61,7 @@ jobs:
           --set port.baseUrl="https://api.port.io"  \
           --set initializePortResources=true  \
           --set sendRawDataExamples=true  \
-          --set scheduledResyncInterval=360  \
+          --set scheduledResyncInterval=60  \
           --set integration.identifier="ethereal-dev"  \
           --set integration.type="aws"  \
           --set integration.eventListener.type="POLLING"  \
