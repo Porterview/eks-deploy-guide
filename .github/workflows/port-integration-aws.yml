@@ -1,0 +1,69 @@
+name: Deploy port-labs/port-k8s-exporter to EKS via Helm
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Deployment cluster'
+        required: true
+      port_context:
+        required: true
+        description: "Action and general context (blueprint, run id, etc...)"
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # ← allows the job to request an OIDC token
+      contents: read   # ← required to access the repo?
+
+    steps:
+    - name: Extract cluster name and region from arn
+      run: |
+        cluster_arn=$(echo "${{ github.event.inputs.cluster }}" | awk -F/ '{print $NF}')
+        cluster_name=$(echo "${cluster_arn}" | awk -F: '{print $NF}')
+        cluster_region=$(echo "${{ github.event.inputs.cluster }}" | awk -F: '{print $4}')
+
+        echo "CLUSTER_NAME=$cluster_name" >> $GITHUB_ENV
+        echo "CLUSTER_REGION=$cluster_region" >> $GITHUB_ENV
+
+    - name: Configure AWS credentials (github-actions)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }} # NOTE: should be set from target cluster region
+
+    # NOTE: This role should really not be hardcoded
+    - name: Configure AWS credentials (assume eks deploy role)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::496973234569:role/k8s-deployers-gha
+        aws-region: ${{ secrets.AWS_REGION }}
+
+# The following script will install an Ocean integration at your K8s cluster using helm
+# initializePortResources: When set to true the integration will create default blueprints + JQ Mappings
+# sendRawDataExamples: When set to true the integration will send raw data examples from the third party API to port (on resync), for testing and managing the integration mapping
+# integration.identifier: Change the identifier to describe your integration
+# integration.secrets.awsAccessKeyId: The AWS User Access Key ID used for authentication.
+# integration.secrets.awsSecretAccessKey: The AWS User Secret Access Key used for authentication.
+    - name: Deploy to EKS
+      run: |
+        aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.CLUSTER_REGION }}
+
+        # stateKey: Change the stateKey to describe your integration
+        helm repo add --force-update port-labs https://port-labs.github.io/helm-charts
+        helm upgrade --install aws-ethereal-dev port-labs/port-ocean \
+          --set port.clientId="${{ secrets.PORT_CLIENT_ID }}"  \
+          --set port.clientSecret="${{ secrets.PORT_CLIENT_SECRET }}"  \
+          --set port.baseUrl="https://api.port.io"  \
+          --set initializePortResources=true  \
+          --set sendRawDataExamples=true  \
+          --set scheduledResyncInterval=360  \
+          --set integration.identifier="aws-ethereal-dev"  \
+          --set integration.type="aws"  \
+          --set integration.eventListener.type="POLLING"  \
+          --set integration.secrets.awsAccessKeyId="${{ secrets.PORT_INTEGRATION_AWS_AWS_ACCESS_KEY_ID }}"  \
+          --set integration.secrets.awsSecretAccessKey="${{ secrets.PORT_INTEGRATION_AWS_AWS_SECRET_ACCESS_KEY }}" 
+      shell: bash
