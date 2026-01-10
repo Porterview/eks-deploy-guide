@@ -98,9 +98,8 @@ jobs:
           operation: PATCH_RUN
           status: "SUCCESS"
           runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "${
-            if eq(github.event.inputs.action, 'apply')
-              'EKS cluster creation has been completed: ${{ github.event.inputs.cluster_name }}'
-            else
-              'EKS cluster destruction has been completed: ${{ github.event.inputs.cluster_name }}'
-            }"
+          logMessage: >-
+            "${{ github.event.inputs.action == 'apply' &&
+              'EKS cluster creation has been completed: ' ||
+              'EKS cluster destruction has been completed: '
+            }}${{ github.event.inputs.cluster_name }}"
