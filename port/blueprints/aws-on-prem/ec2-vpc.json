@@ -5,37 +5,37 @@
   "schema": {
     "properties": {
       "vpc_id": {
+        "type": "string",
         "title": "VPC ID",
-        "description": "The ID of the VPC",
-        "type": "string"
+        "description": "The ID of the VPC"
       },
       "name": {
+        "type": "string",
         "title": "Name",
-        "description": "The Name tag value extracted from Tags",
-        "type": "string"
-      },
-      "arn": {
-        "title": "ARN",
-        "description": "The Amazon Resource Name (ARN) of the VPC",
-        "type": "string"
+        "description": "The Name tag value extracted from Tags"
       },
       "cidr_block": {
+        "type": "string",
         "title": "CIDR Block",
-        "description": "The primary IPv4 CIDR block for the VPC",
-        "type": "string"
+        "description": "The primary IPv4 CIDR block for the VPC"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the VPC"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
       },
       "tags": {
+        "type": "array",
         "title": "Tags",
         "description": "Tags attached to the VPC",
-        "type": "array",
         "items": {
           "type": "object"
         }
-      },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
       }
     },
     "required": []

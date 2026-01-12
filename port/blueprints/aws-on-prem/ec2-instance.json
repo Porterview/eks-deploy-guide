@@ -4,16 +4,20 @@
   "icon": "AWS",
   "schema": {
     "properties": {
-      "arn": {
+      "instance_id": {
         "type": "string",
-        "title": "ARN",
-        "description": "The Amazon Resource Name (ARN) of the EC2 instance"
+        "title": "Instance ID",
+        "description": "The ID of the EC2 instance"
+      },
+      "instance_type": {
+        "type": "string",
+        "title": "Instance Type",
+        "description": "The type of the EC2 instance (e.g., t2.micro, m5.large)"
       },
       "state": {
-        "icon": "DefaultProperty",
+        "type": "string",
         "title": "State",
         "description": "The current state of the instance",
-        "type": "string",
         "enum": [
           "pending",
           "running",
@@ -31,19 +35,6 @@
           "stopped": "red"
         }
       },
-      "tags": {
-        "type": "array",
-        "title": "Tags",
-        "description": "Tags associated with the EC2 instance",
-        "items": {
-          "type": "object"
-        }
-      },
-      "instance_type": {
-        "type": "string",
-        "title": "Instance Type",
-        "description": "The type of the EC2 instance (e.g., t2.micro, m5.large)"
-      },
       "public_ip_address": {
         "type": "string",
         "title": "Public IP Address",
@@ -54,15 +45,23 @@
         "title": "Private IP Address",
         "description": "The private IP address of the EC2 instance"
       },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
-      },
-      "instance_id": {
+      "arn": {
         "type": "string",
-        "title": "Instance ID",
-        "description": "The ID of the EC2 instance"
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the EC2 instance"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the EC2 instance",
+        "items": {
+          "type": "object"
+        }
       }
     },
     "required": []

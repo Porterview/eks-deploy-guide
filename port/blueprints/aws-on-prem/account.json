@@ -14,11 +14,6 @@
         "title": "Account Name",
         "description": "The friendly name of the account"
       },
-      "arn": {
-        "type": "string",
-        "title": "ARN",
-        "description": "The Amazon Resource Name (ARN) of the account"
-      },
       "email": {
         "type": "string",
         "title": "Email",
@@ -57,6 +52,11 @@
         "title": "Joined Timestamp",
         "description": "The date the account became a part of the organization",
         "format": "date-time"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the account"
       }
     },
     "required": []

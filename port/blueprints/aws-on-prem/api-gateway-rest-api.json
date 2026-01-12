@@ -4,86 +4,86 @@
   "icon": "AWS",
   "schema": {
     "properties": {
-      "name": {
-        "title": "API Name",
-        "description": "The name of the REST API",
-        "type": "string"
-      },
       "rest_api_id": {
+        "type": "string",
         "title": "REST API ID",
-        "description": "The ID of the REST API",
-        "type": "string"
+        "description": "The ID of the REST API"
+      },
+      "name": {
+        "type": "string",
+        "title": "API Name",
+        "description": "The name of the REST API"
       },
       "description": {
+        "type": "string",
         "title": "Description",
-        "description": "Description of the REST API",
-        "type": "string"
+        "description": "Description of the REST API"
       },
       "api_key_source_type": {
+        "type": "string",
         "title": "API Key Source Type",
-        "description": "Location of API keys (HEADER or AUTHORIZER)",
-        "type": "string"
+        "description": "Location of API keys (HEADER or AUTHORIZER)"
       },
       "endpoint_configuration": {
+        "type": "object",
         "title": "Endpoint Configuration",
-        "description": "Endpoint configuration (EDGE / REGIONAL / PRIVATE)",
-        "type": "object"
+        "description": "Endpoint configuration (EDGE / REGIONAL / PRIVATE)"
       },
       "policy": {
+        "type": "string",
         "title": "Resource Policy",
-        "description": "JSON resource policy attached to the REST API",
-        "type": "string"
+        "description": "JSON resource policy attached to the REST API"
       },
       "minimum_compression_size": {
+        "type": "number",
         "title": "Minimum Compression Size",
-        "description": "Minimum payload size in bytes for compression",
-        "type": "number"
+        "description": "Minimum payload size in bytes for compression"
       },
       "binary_media_types": {
+        "type": "array",
         "title": "Binary Media Types",
         "description": "List of binary media types supported by the API",
-        "type": "array",
         "items": {
           "type": "string"
         }
       },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
       "region": {
+        "type": "string",
         "title": "Region",
-        "description": "AWS region where this API resides",
-        "type": "string"
+        "description": "The AWS region where this API resides"
       },
       "account_id": {
+        "type": "string",
         "title": "AWS Account ID",
-        "description": "AWS account that owns this REST API",
-        "type": "string"
+        "description": "The AWS account that owns this REST API"
       },
       "tags": {
-        "title": "Tags",
-        "description": "Raw AWS tags",
         "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the API Gateway REST API",
         "items": {
           "type": "object"
         }
       },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
-      },
       "application_name": {
+        "type": "string",
         "title": "Application Name",
-        "description": "Value of the ApplicationName tag",
-        "type": "string"
+        "description": "Value of the ApplicationName tag"
       },
       "environment_name": {
+        "type": "string",
         "title": "Environment",
-        "description": "Value of the Environment tag",
-        "type": "string"
+        "description": "Value of the Environment tag"
       },
       "service_tag": {
+        "type": "string",
         "title": "Service Tag",
-        "description": "Value of the Service/service tag if present",
-        "type": "string"
+        "description": "Value of the Service/service tag if present"
       }
     },
     "required": []

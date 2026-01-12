@@ -5,154 +5,154 @@
   "schema": {
     "properties": {
       "name": {
+        "type": "string",
         "title": "Function Name",
-        "description": "The name of the Lambda function",
-        "type": "string"
-      },
-      "arn": {
-        "title": "Function ARN",
-        "description": "The ARN of the Lambda function",
-        "type": "string"
+        "description": "The name of the Lambda function"
       },
       "runtime": {
+        "type": "string",
         "title": "Runtime",
-        "description": "Runtime environment for the Lambda function",
-        "type": "string"
+        "description": "Runtime environment for the Lambda function"
       },
       "role": {
+        "type": "string",
         "title": "Execution Role ARN",
-        "description": "IAM role that Lambda assumes when it runs the function",
-        "type": "string"
+        "description": "IAM role that Lambda assumes when it runs the function"
       },
       "handler": {
+        "type": "string",
         "title": "Handler",
-        "description": "The function handler that Lambda calls to begin execution",
-        "type": "string"
+        "description": "The function handler that Lambda calls to begin execution"
       },
       "description": {
+        "type": "string",
         "title": "Description",
-        "description": "Description of the Lambda function",
-        "type": "string"
+        "description": "Description of the Lambda function"
       },
       "timeout": {
+        "type": "number",
         "title": "Timeout (seconds)",
-        "description": "The function execution time at which Lambda should terminate the function",
-        "type": "number"
+        "description": "The function execution time at which Lambda should terminate the function"
       },
       "memory_size": {
+        "type": "number",
         "title": "Memory Size (MB)",
-        "description": "Amount of memory available to the function at runtime",
-        "type": "number"
+        "description": "Amount of memory available to the function at runtime"
       },
       "code_size": {
+        "type": "number",
         "title": "Code Size (bytes)",
-        "description": "The size of the function's deployment package, in bytes",
-        "type": "number"
+        "description": "The size of the function's deployment package, in bytes"
       },
       "last_modified": {
+        "type": "string",
         "title": "Last Modified",
         "description": "The time when the function was last updated",
-        "type": "string",
         "format": "date-time"
       },
       "package_type": {
+        "type": "string",
         "title": "Package Type",
-        "description": "Image or Zip",
-        "type": "string"
+        "description": "Image or Zip"
       },
       "architectures": {
+        "type": "array",
         "title": "Architectures",
         "description": "Instruction set architectures supported (e.g. x86_64, arm64)",
-        "type": "array",
         "items": {
           "type": "string"
         }
       },
       "kms_key_arn": {
+        "type": "string",
         "title": "KMS Key ARN",
-        "description": "The KMS key ARN used to encrypt the function's environment variables",
-        "type": "string"
+        "description": "The KMS key ARN used to encrypt the function's environment variables"
       },
       "tracing_config": {
+        "type": "object",
         "title": "Tracing Configuration",
-        "description": "X-Ray tracing configuration for the function",
-        "type": "object"
+        "description": "X-Ray tracing configuration for the function"
       },
       "vpc_config": {
+        "type": "object",
         "title": "VPC Configuration",
-        "description": "VPC configuration associated with the function",
-        "type": "object"
+        "description": "VPC configuration associated with the function"
       },
       "environment_variables": {
+        "type": "object",
         "title": "Environment Variables",
-        "description": "Key-value pairs that Lambda adds to the execution environment",
-        "type": "object"
+        "description": "Key-value pairs that Lambda adds to the execution environment"
       },
       "layers": {
+        "type": "array",
         "title": "Layers",
         "description": "Function layers",
-        "type": "array",
         "items": {
           "type": "object"
         }
       },
       "logging_config": {
+        "type": "object",
         "title": "Logging Configuration",
-        "description": "Logging configuration for the function",
-        "type": "object"
+        "description": "Logging configuration for the function"
       },
       "ephemeral_storage": {
+        "type": "object",
         "title": "Ephemeral Storage",
-        "description": "Ephemeral storage settings for the function",
-        "type": "object"
+        "description": "Ephemeral storage settings for the function"
       },
       "snap_start": {
+        "type": "object",
         "title": "SnapStart",
-        "description": "SnapStart configuration",
-        "type": "object"
+        "description": "SnapStart configuration"
       },
       "runtime_management_config": {
+        "type": "object",
         "title": "Runtime Management Config",
-        "description": "Runtime management configuration",
-        "type": "object"
+        "description": "Runtime management configuration"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the Lambda function"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
       },
       "region": {
+        "type": "string",
         "title": "Region",
-        "description": "AWS region where the Lambda function resides",
-        "type": "string"
+        "description": "The AWS region where the Lambda function resides"
       },
       "account_id": {
+        "type": "string",
         "title": "AWS Account ID",
-        "description": "AWS account in which this Lambda function is deployed",
-        "type": "string"
+        "description": "The AWS account in which this Lambda function is deployed"
       },
       "tags": {
-        "title": "Tags",
-        "description": "Raw AWS tags attached to the function",
         "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the Lambda function",
         "items": {
           "type": "object"
         }
       },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
-      },
       "application_name": {
+        "type": "string",
         "title": "Application Name",
-        "description": "Value of the ApplicationName tag",
-        "type": "string"
+        "description": "Value of the ApplicationName tag"
       },
       "environment_name": {
+        "type": "string",
         "title": "Environment",
-        "description": "Value of the Environment tag",
-        "type": "string"
+        "description": "Value of the Environment tag"
       },
       "service_tag": {
+        "type": "string",
         "title": "Service Tag",
-        "description": "Value of the Service/service tag if present",
-        "type": "string"
+        "description": "Value of the Service/service tag if present"
       }
     },
     "required": []
@@ -161,16 +161,16 @@
   "calculationProperties": {},
   "aggregationProperties": {},
   "relations": {
-    "workload": {
-      "title": "Workload",
-      "target": "workload",
-      "required": false,
-      "many": false
-    },
     "account": {
       "title": "AWS Account",
       "target": "awsAccount",
       "required": true,
+      "many": false
+    },
+    "workload": {
+      "title": "Workload",
+      "target": "workload",
+      "required": false,
       "many": false
     }
   }

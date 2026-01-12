@@ -4,72 +4,72 @@
   "icon": "AWS",
   "schema": {
     "properties": {
-      "arn": {
-        "title": "ARN",
-        "description": "ECS Cluster ARN",
-        "type": "string"
-      },
       "name": {
+        "type": "string",
         "title": "Cluster Name",
-        "description": "ECS cluster name",
-        "type": "string"
-      },
-      "region": {
-        "title": "Region",
-        "description": "AWS region",
-        "type": "string"
+        "description": "The name of the ECS cluster"
       },
       "capacity_providers": {
+        "type": "array",
         "title": "Capacity Providers",
         "description": "Capacity providers associated with this cluster",
-        "type": "array",
         "items": {
           "type": "string"
         }
       },
       "cluster_settings": {
-        "title": "Cluster Settings",
-        "description": "Raw ClusterSettings from ECS (e.g. containerInsights)",
         "type": "array",
+        "title": "Cluster Settings",
+        "description": "Cluster settings from ECS (e.g. containerInsights)",
         "items": {
           "type": "object"
         }
       },
       "configuration": {
+        "type": "object",
         "title": "Configuration",
-        "description": "Execute command and logging configuration",
-        "type": "object"
+        "description": "Execute command and logging configuration"
       },
       "default_capacity_provider_strategy": {
+        "type": "array",
         "title": "Default Capacity Provider Strategy",
         "description": "Default capacity provider strategy for the cluster",
+        "items": {
+          "type": "object"
+        }
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the ECS cluster"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
+      "region": {
+        "type": "string",
+        "title": "Region",
+        "description": "The AWS region where the cluster is located"
+      },
+      "tags": {
         "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the ECS cluster",
         "items": {
           "type": "object"
         }
       },
       "application_name": {
-        "title": "Application Name tag",
-        "description": "Value of the ApplicationName tag on the cluster",
-        "type": "string"
+        "type": "string",
+        "title": "Application Name",
+        "description": "Value of the ApplicationName tag"
       },
       "environment_name": {
-        "title": "Environment tag",
-        "description": "Value of the Environment tag on the cluster",
-        "type": "string"
-      },
-      "tags": {
-        "title": "Tags",
-        "description": "All ECS cluster tags",
-        "type": "array",
-        "items": {
-          "type": "object"
-        }
-      },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
+        "type": "string",
+        "title": "Environment",
+        "description": "Value of the Environment tag"
       }
     },
     "required": []

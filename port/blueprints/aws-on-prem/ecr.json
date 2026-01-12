@@ -5,77 +5,77 @@
   "schema": {
     "properties": {
       "name": {
+        "type": "string",
         "title": "Repository Name",
-        "description": "The name of the ECR repository",
-        "type": "string"
-      },
-      "arn": {
-        "title": "Repository ARN",
-        "description": "The ARN of the ECR repository",
-        "type": "string"
+        "description": "The name of the ECR repository"
       },
       "registry_id": {
+        "type": "string",
         "title": "Registry ID",
-        "description": "AWS registry ID that owns this repository",
-        "type": "string"
-      },
-      "region": {
-        "title": "Region",
-        "description": "AWS region where the repository resides",
-        "type": "string"
+        "description": "The AWS registry ID that owns this repository"
       },
       "image_tag_mutability": {
+        "type": "string",
         "title": "Image Tag Mutability",
-        "description": "IMMUTABLE or MUTABLE",
-        "type": "string"
+        "description": "IMMUTABLE or MUTABLE"
       },
       "encryption_configuration": {
+        "type": "object",
         "title": "Encryption Configuration",
-        "description": "Encryption configuration of the repository",
-        "type": "object"
+        "description": "Encryption configuration of the repository"
       },
       "image_scanning_configuration": {
+        "type": "object",
         "title": "Image Scanning Configuration",
-        "description": "Image scanning configuration for the repository",
-        "type": "object"
+        "description": "Image scanning configuration for the repository"
       },
       "lifecycle_policy": {
+        "type": "object",
         "title": "Lifecycle Policy",
-        "description": "Lifecycle policy for images in the repository",
-        "type": "object"
+        "description": "Lifecycle policy for images in the repository"
       },
       "repository_policy_text": {
+        "type": "object",
         "title": "Repository Policy",
-        "description": "JSON policy text applied to the repository",
-        "type": "object"
+        "description": "JSON policy text applied to the repository"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the ECR repository"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
+      "region": {
+        "type": "string",
+        "title": "Region",
+        "description": "The AWS region where the repository resides"
       },
       "tags": {
-        "title": "Tags",
-        "description": "Raw AWS tags attached to the repository",
         "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the ECR repository",
         "items": {
           "type": "object"
         }
       },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
-      },
       "application_name": {
+        "type": "string",
         "title": "Application Name",
-        "description": "Value of the ApplicationName tag",
-        "type": "string"
+        "description": "Value of the ApplicationName tag"
       },
       "environment_name": {
+        "type": "string",
         "title": "Environment",
-        "description": "Value of the Environment tag",
-        "type": "string"
+        "description": "Value of the Environment tag"
       },
       "service_tag": {
+        "type": "string",
         "title": "Service Tag",
-        "description": "Value of the Service/service tag if present",
-        "type": "string"
+        "description": "Value of the Service/service tag if present"
       }
     },
     "required": []

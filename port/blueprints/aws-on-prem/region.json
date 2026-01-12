@@ -1,13 +1,13 @@
 {
   "identifier": "awsRegion",
-  "description": "",
-  "title": "Region",
+  "title": "AWS Region",
   "icon": "AWS",
   "schema": {
     "properties": {
       "link": {
         "type": "string",
         "title": "Link",
+        "description": "Link to the region in AWS console",
         "format": "url"
       }
     },

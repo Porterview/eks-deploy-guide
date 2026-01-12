@@ -5,62 +5,62 @@
   "schema": {
     "properties": {
       "subnet_id": {
+        "type": "string",
         "title": "Subnet ID",
-        "description": "The ID of the subnet",
-        "type": "string"
+        "description": "The ID of the subnet"
       },
       "name": {
+        "type": "string",
         "title": "Name",
-        "description": "The Name tag value extracted from Tags",
-        "type": "string"
-      },
-      "arn": {
-        "title": "ARN",
-        "description": "The Amazon Resource Name (ARN) of the subnet",
-        "type": "string"
+        "description": "The Name tag value extracted from Tags"
       },
       "vpc_id": {
+        "type": "string",
         "title": "VPC ID",
-        "description": "The ID of the VPC the subnet is in",
-        "type": "string"
+        "description": "The ID of the VPC the subnet is in"
       },
       "cidr_block": {
+        "type": "string",
         "title": "CIDR Block",
-        "description": "The IPv4 CIDR block assigned to the subnet",
-        "type": "string"
+        "description": "The IPv4 CIDR block assigned to the subnet"
       },
       "availability_zone": {
+        "type": "string",
         "title": "Availability Zone",
-        "description": "The Availability Zone of the subnet",
-        "type": "string"
+        "description": "The Availability Zone of the subnet"
       },
       "availability_zone_id": {
+        "type": "string",
         "title": "Availability Zone ID",
-        "description": "The Availability Zone ID of the subnet",
-        "type": "string"
+        "description": "The Availability Zone ID of the subnet"
       },
       "map_public_ip_on_launch": {
+        "type": "boolean",
         "title": "Map Public IP on Launch",
-        "description": "Indicates whether instances launched in this subnet receive a public IPv4 address",
-        "type": "boolean"
+        "description": "Indicates whether instances launched in this subnet receive a public IPv4 address"
       },
       "assign_ipv6_address_on_creation": {
+        "type": "boolean",
         "title": "Assign IPv6 Address on Creation",
-        "description": "Indicates whether a network interface created in this subnet receives an IPv6 address",
-        "type": "boolean"
+        "description": "Indicates whether a network interface created in this subnet receives an IPv6 address"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the subnet"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
       },
       "tags": {
+        "type": "array",
         "title": "Tags",
         "description": "Tags attached to the subnet",
-        "type": "array",
         "items": {
           "type": "object"
         }
-      },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
       }
     },
     "required": []

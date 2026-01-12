@@ -6,51 +6,58 @@
     "properties": {
       "name": {
         "type": "string",
-        "title": "Cluster Name"
+        "title": "Cluster Name",
+        "description": "The name of the EKS cluster"
       },
       "version": {
         "type": "string",
-        "title": "Kubernetes Version"
+        "title": "Kubernetes Version",
+        "description": "The Kubernetes version of the cluster"
       },
       "role_arn": {
         "type": "string",
-        "title": "IAM Role ARN"
+        "title": "IAM Role ARN",
+        "description": "The ARN of the IAM role that provides permissions for the Kubernetes control plane"
       },
       "endpoint_public_access": {
         "type": "boolean",
-        "title": "Public Endpoint Access"
+        "title": "Public Endpoint Access",
+        "description": "Indicates whether the Kubernetes API server endpoint is publicly accessible"
       },
       "endpoint_private_access": {
         "type": "boolean",
-        "title": "Private Endpoint Access"
-      },
-      "arn": {
-        "type": "string",
-        "title": "Cluster ARN"
+        "title": "Private Endpoint Access",
+        "description": "Indicates whether the Kubernetes API server endpoint is accessible from within the VPC"
       },
       "endpoint": {
         "type": "string",
-        "title": "API Server Endpoint"
+        "title": "API Server Endpoint",
+        "description": "The endpoint for the Kubernetes API server"
       },
       "certificate_authority": {
         "type": "string",
-        "title": "Certificate Authority Data"
+        "title": "Certificate Authority Data",
+        "description": "The base64 encoded certificate data required to communicate with the cluster"
       },
       "open_id_connect_issuer_url": {
         "type": "string",
-        "title": "OIDC Issuer URL"
+        "title": "OIDC Issuer URL",
+        "description": "The OpenID Connect identity provider issuer URL for the cluster"
       },
       "cluster_security_group_id": {
         "type": "string",
-        "title": "Cluster Security Group ID"
+        "title": "Cluster Security Group ID",
+        "description": "The security group ID associated with the cluster control plane"
       },
       "deletion_protection": {
         "type": "boolean",
-        "title": "Deletion Protection Enabled"
+        "title": "Deletion Protection Enabled",
+        "description": "Indicates whether deletion protection is enabled for the cluster"
       },
       "subnet_ids": {
         "type": "array",
         "title": "Subnet IDs",
+        "description": "The subnets associated with the cluster",
         "items": {
           "type": "string"
         }
@@ -58,6 +65,7 @@
       "security_group_ids": {
         "type": "array",
         "title": "Security Group IDs",
+        "description": "The security group IDs associated with the cluster",
         "items": {
           "type": "string"
         }
@@ -65,6 +73,7 @@
       "public_access_cidrs": {
         "type": "array",
         "title": "Public Access CIDRs",
+        "description": "The CIDR blocks that are allowed to access the public API server endpoint",
         "items": {
           "type": "string"
         }
@@ -72,42 +81,55 @@
       "kubernetes_network_config": {
         "type": "object",
         "title": "Kubernetes Network Config",
-        "additionalProperties": true
+        "description": "The Kubernetes network configuration for the cluster"
       },
       "logging": {
         "type": "object",
         "title": "Cluster Logging",
-        "additionalProperties": true
+        "description": "The logging configuration for the cluster"
       },
       "upgrade_policy": {
         "type": "object",
         "title": "Upgrade Policy",
-        "additionalProperties": true
+        "description": "The upgrade policy configuration for the cluster"
       },
       "access_config": {
         "type": "object",
         "title": "Access Config",
-        "additionalProperties": true
+        "description": "The access configuration for the cluster"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the EKS cluster"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
       },
       "tags": {
         "type": "array",
         "title": "Tags",
+        "description": "Tags attached to the EKS cluster",
         "items": {
-          "type": "object",
-          "properties": {
-            "Key": {
-              "type": "string"
-            },
-            "Value": {
-              "type": "string"
-            }
-          }
+          "type": "object"
         }
       },
-      "kind": {
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource",
-        "type": "string"
+      "account_id": {
+        "type": "string",
+        "title": "AWS Account ID",
+        "description": "The AWS account ID that owns the cluster"
+      },
+      "application_name": {
+        "type": "string",
+        "title": "Application Name",
+        "description": "Value of the ApplicationName tag"
+      },
+      "environment_name": {
+        "type": "string",
+        "title": "Environment",
+        "description": "Value of the Environment tag"
       }
     },
     "required": []
@@ -119,7 +141,7 @@
     "account": {
       "title": "AWS Account",
       "target": "awsAccount",
-      "required": false,
+      "required": true,
       "many": false
     },
     "region": {
