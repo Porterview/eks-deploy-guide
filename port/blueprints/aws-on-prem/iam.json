@@ -1,0 +1,86 @@
+{
+  "identifier": "iamRole",
+  "title": "IAM Role",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "role_id": {
+        "type": "string",
+        "title": "Role ID",
+        "description": "The stable and unique string identifying the role"
+      },
+      "name": {
+        "type": "string",
+        "title": "Role Name",
+        "description": "The name of the IAM role"
+      },
+      "description": {
+        "type": "string",
+        "title": "Description",
+        "description": "A description of the IAM role"
+      },
+      "path": {
+        "type": "string",
+        "title": "Path",
+        "description": "The path to the role"
+      },
+      "assume_role_policy_document": {
+        "type": "string",
+        "title": "Assume Role Policy Document",
+        "description": "The trust policy document that grants entities permission to assume the role"
+      },
+      "max_session_duration": {
+        "type": "number",
+        "title": "Max Session Duration",
+        "description": "The maximum session duration (in seconds) for the role"
+      },
+      "permissions_boundary": {
+        "type": "string",
+        "title": "Permissions Boundary",
+        "description": "The ARN of the policy used to set the permissions boundary for the role"
+      },
+      "create_date": {
+        "type": "string",
+        "title": "Create Date",
+        "description": "The date and time when the role was created",
+        "format": "date-time"
+      },
+      "last_used_date": {
+        "type": "string",
+        "title": "Last Used Date",
+        "description": "The date and time when the role was last used",
+        "format": "date-time"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the IAM role"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the IAM role",
+        "items": {
+          "type": "object"
+        }
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    }
+  }
+}

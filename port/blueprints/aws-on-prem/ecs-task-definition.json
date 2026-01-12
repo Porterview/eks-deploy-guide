@@ -1,0 +1,124 @@
+{
+  "identifier": "ecsTaskDefinition",
+  "title": "ECS Task Definition",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "family": {
+        "type": "string",
+        "title": "Family",
+        "description": "The family name of the task definition"
+      },
+      "cpu": {
+        "type": "string",
+        "title": "CPU",
+        "description": "The total amount of CPU for the task"
+      },
+      "memory": {
+        "type": "string",
+        "title": "Memory",
+        "description": "The total amount of memory for the task"
+      },
+      "network_mode": {
+        "type": "string",
+        "title": "Network Mode",
+        "description": "The network mode to use for the containers"
+      },
+      "requires_compatibilities": {
+        "type": "array",
+        "title": "Requires Compatibilities",
+        "description": "Launch types (e.g. FARGATE, EC2) required by the task",
+        "items": {
+          "type": "string"
+        }
+      },
+      "execution_role_arn": {
+        "type": "string",
+        "title": "Execution Role ARN",
+        "description": "The ARN of the task execution role"
+      },
+      "task_role_arn": {
+        "type": "string",
+        "title": "Task Role ARN",
+        "description": "The ARN of the IAM role that tasks assume"
+      },
+      "container_definitions": {
+        "type": "array",
+        "title": "Container Definitions",
+        "description": "Container definitions for this task definition",
+        "items": {
+          "type": "object"
+        }
+      },
+      "volumes": {
+        "type": "array",
+        "title": "Volumes",
+        "description": "Volumes used by this task definition",
+        "items": {
+          "type": "object"
+        }
+      },
+      "runtime_platform": {
+        "type": "object",
+        "title": "Runtime Platform",
+        "description": "Runtime platform configuration (CPU architecture/OS)"
+      },
+      "ephemeral_storage": {
+        "type": "object",
+        "title": "Ephemeral Storage",
+        "description": "Ephemeral storage configuration for tasks"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
+      "region": {
+        "type": "string",
+        "title": "Region",
+        "description": "The AWS region where the task definition is located"
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the ECS task definition",
+        "items": {
+          "type": "object"
+        }
+      },
+      "application_name": {
+        "type": "string",
+        "title": "Application Name",
+        "description": "Value of the ApplicationName tag"
+      },
+      "environment_name": {
+        "type": "string",
+        "title": "Environment",
+        "description": "Value of the Environment tag"
+      },
+      "service_tag": {
+        "type": "string",
+        "title": "Service Tag",
+        "description": "Value of the Service/service tag if present"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "workload": {
+      "title": "Workload",
+      "target": "workload",
+      "required": false,
+      "many": false
+    }
+  }
+}

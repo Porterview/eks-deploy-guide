@@ -1,0 +1,20 @@
+{
+  "identifier": "awsRegion",
+  "title": "AWS Region",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "link": {
+        "type": "string",
+        "title": "Link",
+        "description": "Link to the region in AWS console",
+        "format": "url"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {}
+}

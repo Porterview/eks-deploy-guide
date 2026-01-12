@@ -1,0 +1,92 @@
+{
+  "identifier": "ec2Instance",
+  "title": "EC2 Instance",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "instance_id": {
+        "type": "string",
+        "title": "Instance ID",
+        "description": "The ID of the EC2 instance"
+      },
+      "instance_type": {
+        "type": "string",
+        "title": "Instance Type",
+        "description": "The type of the EC2 instance (e.g., t2.micro, m5.large)"
+      },
+      "state": {
+        "type": "string",
+        "title": "State",
+        "description": "The current state of the instance",
+        "enum": [
+          "pending",
+          "running",
+          "shutting-down",
+          "terminated",
+          "stopping",
+          "stopped"
+        ],
+        "enumColors": {
+          "pending": "yellow",
+          "running": "green",
+          "shutting-down": "yellow",
+          "terminated": "red",
+          "stopping": "yellow",
+          "stopped": "red"
+        }
+      },
+      "public_ip_address": {
+        "type": "string",
+        "title": "Public IP Address",
+        "description": "The public IP address of the EC2 instance"
+      },
+      "private_ip_address": {
+        "type": "string",
+        "title": "Private IP Address",
+        "description": "The private IP address of the EC2 instance"
+      },
+      "arn": {
+        "type": "string",
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the EC2 instance"
+      },
+      "kind": {
+        "type": "string",
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource"
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "description": "Tags attached to the EC2 instance",
+        "items": {
+          "type": "object"
+        }
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "region": {
+      "title": "AWS Region",
+      "target": "awsRegion",
+      "required": false,
+      "many": false
+    },
+    "subnet": {
+      "title": "EC2 Subnet",
+      "target": "ec2Subnet",
+      "required": true,
+      "many": false
+    }
+  }
+}
