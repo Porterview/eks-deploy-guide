@@ -1,9 +1,32 @@
+# AWS Service Blueprints Mapping Configuration
+#
+# This file defines how AWS resources are mapped from AWS Cloud Control API to Port blueprints.
+# It uses JQ expressions to transform AWS resource data into Port entity structures.
+#
+# Mapping Conventions:
+# - Property ordering: Core identifiers (*_id, name) -> Core properties -> ARN -> Metadata (kind, tags, region, account_id) -> Relations
+# - Null coalescing: Use `// null` for single values, `// []` for arrays, `// {}` for objects
+# - Title extraction: Prefer Name tag extraction when available, fallback to identifier or direct property
+# - ARN construction: When API doesn't provide ARN, construct using: "arn:aws:{service}:{region}:{account}:{resource}/{id}"
+#
+# useGetResourceAPI:
+# - Enable when full resource details are needed (uses CloudControl:GetResource API)
+# - Slower but provides complete property sets
+# - Properties accessed via .Properties.* namespace when enabled
+# - Without it, properties may be limited or accessed directly (e.g., .Id instead of .Properties.Id)
+#
+# Region Policy:
+# - Use regionPolicy to restrict resource discovery to specific regions
+# - Useful for limiting scope or reducing API calls
+# - Applied per-resource basis
+#
 deleteDependentEntities: true
 createMissingRelatedEntities: true
 enableMergeEntity: true
 resources:
-  # When integration is installed into a single account,
-  # resource returns limited information
+  # AWS Account Resources
+  # Note: When integration is installed into a single account (not Organizations),
+  # AWS::Organizations::Account returns limited information (only account ID)
   - kind: AWS::Organizations::Account
     selector:
       query: 'true'
@@ -16,6 +39,8 @@ resources:
           properties:
             account_id: .Id
 
+  # Alternative mapping for Organizations accounts with full details:
+  # Uncomment and use when integration has access to AWS Organizations
   # - kind: AWS::Organizations::Account
   #   selector:
   #     query: 'true'
@@ -38,6 +63,7 @@ resources:
   #             if . != null then sub(" "; "T") else null end
   #           kind: .__Kind
 
+  # IAM Resources
   - kind: AWS::IAM::Role
     selector:
       query: 'true'
@@ -49,11 +75,13 @@ resources:
           title: (.Properties.RoleName // .Identifier)
           blueprint: '"iamRole"'
           properties:
+            # Core identifiers
+            role_id: (.Properties.RoleId // null)
             name: (.Properties.RoleName // .Identifier)
-            arn: (.Properties.Arn // null)
+            # Core properties
             description: (.Properties.Description // null)
             path: (.Properties.Path // null)
-            role_id: (.Properties.RoleId // null)
+            # Convert policy document to JSON string if it's an object
             assume_role_policy_document: >-
               (.Properties.AssumeRolePolicyDocument // null) |
               if . == null then null
@@ -64,11 +92,15 @@ resources:
             permissions_boundary: (.Properties.PermissionsBoundary // null)
             create_date: (.Properties.CreateDate // null)
             last_used_date: (.Properties.RoleLastUsed?.LastUsedDate // null)
-            tags: (.Properties.Tags // [])
+            # ARN
+            arn: (.Properties.Arn // null)
+            # Metadata
             kind: .__Kind
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
 
+  # EC2 Resources
   - kind: AWS::EC2::VPC
     selector:
       query: 'true'
@@ -86,17 +118,20 @@ resources:
           title: .Identifier
           blueprint: '"ec2Vpc"'
           properties:
+            # Core identifiers
             vpc_id: (.Properties.VpcId // .Identifier)
             name: >-
               ((.Properties.Tags // []) 
                 | map(select(.Key == "Name") | .Value) 
                 | (if length > 0 then .[0] else null end))
+            # Core properties
             cidr_block: (.Properties.CidrBlock // null)
-            tags: (.Properties.Tags // [])
-            # API does not provide ARN, construct
+            # ARN
             arn: >-
               "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":vpc/" + .Identifier
+            # Metadata
             kind: .__Kind
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
             region: .__Region
@@ -118,26 +153,32 @@ resources:
           title: .Identifier
           blueprint: '"ec2Subnet"'
           properties:
+            # Core identifiers
             subnet_id: (.Properties.SubnetId // .Identifier)
             name: >-
               ((.Properties.Tags // []) 
                 | map(select(.Key == "Name") | .Value) 
                 | (if length > 0 then .[0] else null end))
+            # Core properties
             vpc_id: (.Properties.VpcId // null)
             cidr_block: (.Properties.CidrBlock // null)
             availability_zone: (.Properties.AvailabilityZone // null)
             availability_zone_id: (.Properties.AvailabilityZoneId // null)
             map_public_ip_on_launch: (.Properties.MapPublicIpOnLaunch // null)
             assign_ipv6_address_on_creation: (.Properties.AssignIpv6AddressOnCreation // null)
-            tags: (.Properties.Tags // [])
+            # ARN
             arn: >-
               "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":subnet/" + .Identifier
+            # Metadata
             kind: .__Kind
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
             region: .__Region
             vpc: (.Properties.VpcId // null)
 
+  # Note: EC2 Instance does not use useGetResourceAPI as the ListResources API
+  # provides sufficient property data for basic instance information
   - kind: AWS::EC2::Instance
     selector:
       query: 'true'
@@ -148,25 +189,28 @@ resources:
           title: >-
             ((.Properties.Tags // []) 
               | map(select(.Key == "Name") | .Value) 
-              | if length > 0 then .[0] else .Identifier end)
+              | (if length > 0 then .[0] else .Identifier end))
           blueprint: '"ec2Instance"'
           properties:
-            instance_type: .Properties.InstanceType
-            state: .Properties.State.Name
-            public_ip_address: .Properties.PublicIpAddress
-            private_ip_address: .Properties.PrivateIpAddress
-            tags: .Properties.Tags
+            # Core identifiers
+            instance_id: (.Properties.InstanceId // .Identifier)
+            # Core properties
+            instance_type: (.Properties.InstanceType // null)
+            state: (.Properties.State.Name // null)
+            public_ip_address: (.Properties.PublicIpAddress // null)
+            private_ip_address: (.Properties.PrivateIpAddress // null)
+            # ARN
             arn: >-
               "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":instance/" + .Properties.InstanceId
+            # Metadata
             kind: .__Kind
-            # link: >-
-            #   .Properties | select(.Arn != null) |
-            #   "https://console.aws.amazon.com/go/view?arn=" + .Arn
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
             region: .__Region
-            subnet: .Properties.SubnetId
+            subnet: (.Properties.SubnetId // null)
 
+  # ECS Resources
   - kind: AWS::ECS::Cluster
     selector:
       query: 'true'
@@ -178,15 +222,19 @@ resources:
           title: .Properties.ClusterName
           blueprint: '"ecsCluster"'
           properties:
-            arn: .Properties.Arn
-            region: .__Region
-            name: .Properties.ClusterName
+            # Core identifiers
+            name: (.Properties.ClusterName // null)
+            # Core properties
             capacity_providers: (.Properties.CapacityProviders // [])
             cluster_settings: (.Properties.ClusterSettings // [])
             configuration: (.Properties.Configuration // null)
             default_capacity_provider_strategy: (.Properties.DefaultCapacityProviderStrategy // [])
-            tags: (.Properties.Tags // [])
+            # ARN
+            arn: (.Properties.Arn // null)
+            # Metadata
             kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
 
@@ -201,8 +249,9 @@ resources:
           title: (.Properties.ServiceName // .Identifier)
           blueprint: '"ecsService"'
           properties:
-            arn: (.Properties.Arn // null)
+            # Core identifiers
             name: (.Properties.ServiceName // .Identifier)
+            # Core properties
             cluster_arn: (.Properties.Cluster // null)
             task_definition_arn: (.Properties.TaskDefinition // null)
             launch_type: (.Properties.LaunchType // null)
@@ -214,9 +263,12 @@ resources:
             propagate_tags: (.Properties.PropagateTags // null)
             enable_execute_command: (.Properties.EnableExecuteCommand // null)
             health_check_grace_period_seconds: (.Properties.HealthCheckGracePeriodSeconds // null)
+            # ARN
+            arn: (.Properties.Arn // null)
+            # Metadata
+            kind: .__Kind
             region: .__Region
             tags: (.Properties.Tags // [])
-            kind: .__Kind
           relations:
             account: .__AccountId
 
@@ -231,7 +283,9 @@ resources:
           title: (.Properties.Family // .Identifier)
           blueprint: '"ecsTaskDefinition"'
           properties:
+            # Core identifiers
             family: (.Properties.Family // null)
+            # Core properties
             cpu: (.Properties.Cpu // null)
             memory: (.Properties.Memory // null)
             network_mode: (.Properties.NetworkMode // null)
@@ -242,12 +296,14 @@ resources:
             volumes: (.Properties.Volumes // [])
             runtime_platform: (.Properties.RuntimePlatform // null)
             ephemeral_storage: (.Properties.EphemeralStorage // null)
+            # Metadata
+            kind: .__Kind
             region: .__Region
             tags: (.Properties.Tags // [])
-            kind: .__Kind
           relations:
             account: .__AccountId
 
+  # Lambda Resources
   - kind: AWS::Lambda::Function
     selector:
       query: 'true'
@@ -259,8 +315,9 @@ resources:
           title: (.Properties.FunctionName // .Identifier)
           blueprint: '"lambdaFunction"'
           properties:
+            # Core identifiers
             name: (.Properties.FunctionName // .Identifier)
-            arn: (.Properties.FunctionArn // null)
+            # Core properties
             runtime: (.Properties.Runtime // null)
             role: (.Properties.Role // null)
             handler: (.Properties.Handler // null)
@@ -280,13 +337,17 @@ resources:
             ephemeral_storage: (.Properties.EphemeralStorage // null)
             snap_start: (.Properties.SnapStart // null)
             runtime_management_config: (.Properties.RuntimeManagementConfig // null)
+            # ARN
+            arn: (.Properties.FunctionArn // null)
+            # Metadata
+            kind: .__Kind
             region: .__Region
             account_id: .__AccountId
             tags: (.Properties.Tags // [])
-            kind: .__Kind
           relations:
             account: .__AccountId
 
+  # API Gateway Resources
   - kind: AWS::ApiGateway::RestApi
     selector:
       query: 'true'
@@ -298,21 +359,25 @@ resources:
           title: (.Properties.Name // .Identifier)
           blueprint: '"apiGatewayRestApi"'
           properties:
-            name: (.Properties.Name // .Identifier)
+            # Core identifiers
             rest_api_id: (.Properties.Id // null)
+            name: (.Properties.Name // .Identifier)
+            # Core properties
             description: (.Properties.Description // null)
             api_key_source_type: (.Properties.ApiKeySourceType // null)
             endpoint_configuration: (.Properties.EndpointConfiguration // null)
             policy: (.Properties.Policy // null)
             minimum_compression_size: (.Properties.MinimumCompressionSize // null)
             binary_media_types: (.Properties.BinaryMediaTypes // [])
+            # Metadata
+            kind: .__Kind
             region: .__Region
             account_id: .__AccountId
             tags: (.Properties.Tags // [])
-            kind: .__Kind
           relations:
             account: .__AccountId
 
+  # S3 Resources
   - kind: AWS::S3::Bucket
     selector:
       query: 'true'
@@ -324,23 +389,27 @@ resources:
           title: (.Properties.BucketName // .Identifier)
           blueprint: '"s3Bucket"'
           properties:
+            # Core identifiers
             name: (.Properties.BucketName // .Identifier)
-            arn: (.Properties.Arn // null)
-            region: >-
-              .Properties.RegionalDomainName |
-              capture(".*\\.(?<region>[^\\.]+)\\.amazonaws\\.com") | .region
+            # Core properties
             public_access_block: (.Properties.PublicAccessBlockConfiguration // null)
             versioning: (.Properties.VersioningConfiguration // null)
             bucket_encryption: (.Properties.BucketEncryption // null)
             logging: (.Properties.LoggingConfiguration // null)
             lifecycle_configuration: (.Properties.LifecycleConfiguration.Rules // [])
-            tags: (.Properties.Tags // [])
+            # ARN
+            arn: (.Properties.Arn // null)
+            # Metadata
             kind: .__Kind
+            region: >-
+              .Properties.RegionalDomainName |
+              capture(".*\\.(?<region>[^\\.]+)\\.amazonaws\\.com") | .region
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
 
+  # EKS Resources
   - kind: AWS::EKS::Cluster
-    noExample: true # NOTE: what's this for?
     selector:
       query: 'true'
       useGetResourceAPI: 'true'
@@ -351,8 +420,9 @@ resources:
           title: .Properties.Name
           blueprint: '"eksCluster"'
           properties:
-            name: .Properties.Name
-            arn: (.Properties.Arn // null)
+            # Core identifiers
+            name: (.Properties.Name // null)
+            # Core properties
             version: (.Properties.Version // null)
             endpoint: (.Properties.Endpoint // null)
             certificate_authority: (.Properties.CertificateAuthorityData // null)
@@ -365,16 +435,20 @@ resources:
             endpoint_public_access: (.Properties.ResourcesVpcConfig?.EndpointPublicAccess // null)
             endpoint_private_access: (.Properties.ResourcesVpcConfig?.EndpointPrivateAccess // null)
             public_access_cidrs: (.Properties.ResourcesVpcConfig?.PublicAccessCidrs // [])
-            tags: (.Properties.Tags // [])
             kubernetes_network_config: (.Properties.KubernetesNetworkConfig // {})
             access_config: (.Properties.AccessConfig // {})
             upgrade_policy: (.Properties.UpgradePolicy // {})
             logging: (.Properties.Logging // {})
+            # ARN
+            arn: (.Properties.Arn // null)
+            # Metadata
             kind: .__Kind
+            tags: (.Properties.Tags // [])
           relations:
-            region: .__Region
             account: .__AccountId
+            region: .__Region
 
+  # ECR Resources
   - kind: AWS::ECR::Repository
     selector:
       query: 'true'
@@ -386,16 +460,20 @@ resources:
           title: (.Properties.RepositoryName // .Identifier)
           blueprint: '"ecrRepository"'
           properties:
+            # Core identifiers
             name: (.Properties.RepositoryName // .Identifier)
-            arn: (.Properties.Arn // null)
             registry_id: (.Properties.RegistryId // null)
-            region: .__Region
+            # Core properties
             image_tag_mutability: (.Properties.ImageTagMutability // null)
             encryption_configuration: (.Properties.EncryptionConfiguration // null)
             image_scanning_configuration: (.Properties.ImageScanningConfiguration // null)
             lifecycle_policy: (.Properties.LifecyclePolicy // null)
             repository_policy_text: (.Properties.RepositoryPolicyText // null)
-            tags: (.Properties.Tags // [])
+            # ARN
+            arn: (.Properties.Arn // null)
+            # Metadata
             kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId

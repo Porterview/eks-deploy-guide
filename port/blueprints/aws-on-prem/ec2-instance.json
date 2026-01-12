@@ -58,6 +58,11 @@
         "title": "AWS Cloud Control API Kind",
         "description": "The kind of the AWS Cloud Control API resource",
         "type": "string"
+      },
+      "instance_id": {
+        "type": "string",
+        "title": "Instance ID",
+        "description": "The ID of the EC2 instance"
       }
     },
     "required": []
