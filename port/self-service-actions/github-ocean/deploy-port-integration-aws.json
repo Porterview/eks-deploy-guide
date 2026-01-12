@@ -1,6 +1,6 @@
 {
   "identifier": "deploy_port_aws_helm",
-  "title": "Deploy Port integration for AWS",
+  "title": "Deploy Port integration: AWS",
   "icon": "Deployment",
   "description": "Deploy Port's AWS integration via Helm",
   "trigger": {
