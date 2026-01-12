@@ -1,0 +1,60 @@
+{
+  "identifier": "ec2Vpc",
+  "title": "EC2 VPC",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "vpc_id": {
+        "title": "VPC ID",
+        "description": "The ID of the VPC",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "description": "The Name tag value extracted from Tags",
+        "type": "string"
+      },
+      "arn": {
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the VPC",
+        "type": "string"
+      },
+      "cidr_block": {
+        "title": "CIDR Block",
+        "description": "The primary IPv4 CIDR block for the VPC",
+        "type": "string"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Tags attached to the VPC",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "region": {
+      "title": "AWS Region",
+      "target": "awsRegion",
+      "required": false,
+      "many": false
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "identifier": "s3Bucket",
+  "title": "S3 Bucket",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Bucket Name",
+        "description": "Name of the S3 bucket"
+      },
+      "arn": {
+        "type": "string",
+        "title": "Bucket ARN",
+        "description": "ARN of the S3 bucket"
+      },
+      "region": {
+        "type": "string",
+        "title": "Region",
+        "description": "AWS region where the bucket is hosted"
+      },
+      "public_access_block": {
+        "type": "object",
+        "title": "Public Access Block",
+        "description": "Block public access configuration"
+      },
+      "versioning": {
+        "type": "object",
+        "title": "Versioning",
+        "description": "Versioning configuration"
+      },
+      "bucket_encryption": {
+        "type": "object",
+        "title": "Bucket Encryption",
+        "description": "Encryption configuration"
+      },
+      "logging": {
+        "type": "object",
+        "title": "Logging",
+        "description": "Logging configuration"
+      },
+      "lifecycle_configuration": {
+        "type": "array",
+        "title": "Lifecycle Rules",
+        "description": "Lifecycle configuration rules",
+        "items": {
+          "type": "object"
+        }
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "description": "Tags applied to the bucket",
+        "items": {
+          "type": "object"
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      },
+      "application_name": {
+        "type": "string",
+        "title": "ApplicationName tag",
+        "description": "Tag value used for application mapping"
+      },
+      "environment_name": {
+        "type": "string",
+        "title": "Environment tag",
+        "description": "Tag value used for environment mapping"
+      },
+      "service_tag": {
+        "type": "string",
+        "title": "Service tag",
+        "description": "Tag value used for service mapping"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "workload": {
+      "title": "Workload",
+      "target": "workload",
+      "required": false,
+      "many": false
+    },
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    }
+  }
+}

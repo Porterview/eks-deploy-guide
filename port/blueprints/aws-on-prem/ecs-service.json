@@ -1,0 +1,135 @@
+{
+  "identifier": "ecsService",
+  "title": "ECS Service",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "arn": {
+        "title": "ARN",
+        "description": "ECS Service ARN",
+        "type": "string"
+      },
+      "name": {
+        "title": "Service Name",
+        "description": "ECS service name",
+        "type": "string"
+      },
+      "cluster_arn": {
+        "title": "Cluster ARN",
+        "description": "ARN of the ECS cluster this service runs in",
+        "type": "string"
+      },
+      "task_definition_arn": {
+        "title": "Task Definition ARN",
+        "description": "ARN of the task definition used by this service",
+        "type": "string"
+      },
+      "launch_type": {
+        "title": "Launch Type",
+        "description": "Launch type (e.g. FARGATE, EC2)",
+        "type": "string"
+      },
+      "scheduling_strategy": {
+        "title": "Scheduling Strategy",
+        "description": "REPLICA or DAEMON",
+        "type": "string"
+      },
+      "desired_count": {
+        "title": "Desired Count",
+        "description": "The desired number of tasks for the service",
+        "type": "number"
+      },
+      "platform_version": {
+        "title": "Platform Version",
+        "description": "The ECS platform version on which to run tasks",
+        "type": "string"
+      },
+      "network_configuration": {
+        "title": "Network Configuration",
+        "description": "VPC/subnet/security group configuration",
+        "type": "object"
+      },
+      "capacity_provider_strategy": {
+        "title": "Capacity Provider Strategy",
+        "description": "Capacity provider strategy used by the service",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "propagate_tags": {
+        "title": "Propagate Tags",
+        "description": "Whether to propagate tags from service or task definition",
+        "type": "string"
+      },
+      "enable_execute_command": {
+        "title": "Enable Execute Command",
+        "description": "Whether ECS Exec is enabled",
+        "type": "boolean"
+      },
+      "health_check_grace_period_seconds": {
+        "title": "Health Check Grace Period Seconds",
+        "description": "Grace period for ELB health checks",
+        "type": "number"
+      },
+      "application_name": {
+        "title": "ApplicationName tag",
+        "description": "Value of the ApplicationName tag on the service",
+        "type": "string"
+      },
+      "environment_name": {
+        "title": "Environment tag",
+        "description": "Value of the Environment tag on the service",
+        "type": "string"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "All ECS service tags",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "region": {
+        "title": "Region",
+        "description": "AWS region of the ECS service",
+        "type": "string"
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "workload": {
+      "title": "Workload",
+      "target": "workload",
+      "required": false,
+      "many": true
+    },
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "task_definition": {
+      "title": "Task Definition",
+      "target": "ecsTaskDefinition",
+      "required": false,
+      "many": false
+    },
+    "cluster": {
+      "title": "ECS Cluster",
+      "target": "ecsCluster",
+      "required": false,
+      "many": true
+    }
+  }
+}

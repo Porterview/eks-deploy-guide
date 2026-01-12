@@ -1,0 +1,108 @@
+{
+  "identifier": "apiGatewayRestApi",
+  "title": "API Gateway REST API",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "name": {
+        "title": "API Name",
+        "description": "The name of the REST API",
+        "type": "string"
+      },
+      "rest_api_id": {
+        "title": "REST API ID",
+        "description": "The ID of the REST API",
+        "type": "string"
+      },
+      "description": {
+        "title": "Description",
+        "description": "Description of the REST API",
+        "type": "string"
+      },
+      "api_key_source_type": {
+        "title": "API Key Source Type",
+        "description": "Location of API keys (HEADER or AUTHORIZER)",
+        "type": "string"
+      },
+      "endpoint_configuration": {
+        "title": "Endpoint Configuration",
+        "description": "Endpoint configuration (EDGE / REGIONAL / PRIVATE)",
+        "type": "object"
+      },
+      "policy": {
+        "title": "Resource Policy",
+        "description": "JSON resource policy attached to the REST API",
+        "type": "string"
+      },
+      "minimum_compression_size": {
+        "title": "Minimum Compression Size",
+        "description": "Minimum payload size in bytes for compression",
+        "type": "number"
+      },
+      "binary_media_types": {
+        "title": "Binary Media Types",
+        "description": "List of binary media types supported by the API",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "region": {
+        "title": "Region",
+        "description": "AWS region where this API resides",
+        "type": "string"
+      },
+      "account_id": {
+        "title": "AWS Account ID",
+        "description": "AWS account that owns this REST API",
+        "type": "string"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Raw AWS tags",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      },
+      "application_name": {
+        "title": "Application Name",
+        "description": "Value of the ApplicationName tag",
+        "type": "string"
+      },
+      "environment_name": {
+        "title": "Environment",
+        "description": "Value of the Environment tag",
+        "type": "string"
+      },
+      "service_tag": {
+        "title": "Service Tag",
+        "description": "Value of the Service/service tag if present",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "workload": {
+      "title": "Workload",
+      "target": "workload",
+      "required": false,
+      "many": false
+    }
+  }
+}

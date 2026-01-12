@@ -1,0 +1,91 @@
+{
+  "identifier": "ec2Subnet",
+  "title": "EC2 Subnet",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "subnet_id": {
+        "title": "Subnet ID",
+        "description": "The ID of the subnet",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "description": "The Name tag value extracted from Tags",
+        "type": "string"
+      },
+      "arn": {
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the subnet",
+        "type": "string"
+      },
+      "vpc_id": {
+        "title": "VPC ID",
+        "description": "The ID of the VPC the subnet is in",
+        "type": "string"
+      },
+      "cidr_block": {
+        "title": "CIDR Block",
+        "description": "The IPv4 CIDR block assigned to the subnet",
+        "type": "string"
+      },
+      "availability_zone": {
+        "title": "Availability Zone",
+        "description": "The Availability Zone of the subnet",
+        "type": "string"
+      },
+      "availability_zone_id": {
+        "title": "Availability Zone ID",
+        "description": "The Availability Zone ID of the subnet",
+        "type": "string"
+      },
+      "map_public_ip_on_launch": {
+        "title": "Map Public IP on Launch",
+        "description": "Indicates whether instances launched in this subnet receive a public IPv4 address",
+        "type": "boolean"
+      },
+      "assign_ipv6_address_on_creation": {
+        "title": "Assign IPv6 Address on Creation",
+        "description": "Indicates whether a network interface created in this subnet receives an IPv6 address",
+        "type": "boolean"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Tags attached to the subnet",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "region": {
+      "title": "AWS Region",
+      "target": "awsRegion",
+      "required": false,
+      "many": false
+    },
+    "vpc": {
+      "title": "VPC",
+      "target": "ec2Vpc",
+      "required": false,
+      "many": false
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "identifier": "iamRole",
+  "title": "IAM Role",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "name": {
+        "title": "Role Name",
+        "description": "The name of the IAM role",
+        "type": "string"
+      },
+      "arn": {
+        "title": "ARN",
+        "description": "The Amazon Resource Name (ARN) of the IAM role",
+        "type": "string"
+      },
+      "description": {
+        "title": "Description",
+        "description": "A description of the IAM role",
+        "type": "string"
+      },
+      "path": {
+        "title": "Path",
+        "description": "The path to the role",
+        "type": "string"
+      },
+      "role_id": {
+        "title": "Role ID",
+        "description": "The stable and unique string identifying the role",
+        "type": "string"
+      },
+      "assume_role_policy_document": {
+        "title": "Assume Role Policy Document",
+        "description": "The trust policy document that grants entities permission to assume the role",
+        "type": "string"
+      },
+      "max_session_duration": {
+        "title": "Max Session Duration",
+        "description": "The maximum session duration (in seconds) for the role",
+        "type": "number"
+      },
+      "permissions_boundary": {
+        "title": "Permissions Boundary",
+        "description": "The ARN of the policy used to set the permissions boundary for the role",
+        "type": "string"
+      },
+      "create_date": {
+        "title": "Create Date",
+        "description": "The date and time when the role was created",
+        "type": "string",
+        "format": "date-time"
+      },
+      "last_used_date": {
+        "title": "Last Used Date",
+        "description": "The date and time when the role was last used",
+        "type": "string",
+        "format": "date-time"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Tags attached to the IAM role",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    }
+  }
+}

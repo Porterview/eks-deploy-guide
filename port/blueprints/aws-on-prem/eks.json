@@ -1,0 +1,132 @@
+{
+  "identifier": "eksCluster",
+  "title": "EKS Cluster",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Cluster Name"
+      },
+      "version": {
+        "type": "string",
+        "title": "Kubernetes Version"
+      },
+      "role_arn": {
+        "type": "string",
+        "title": "IAM Role ARN"
+      },
+      "endpoint_public_access": {
+        "type": "boolean",
+        "title": "Public Endpoint Access"
+      },
+      "endpoint_private_access": {
+        "type": "boolean",
+        "title": "Private Endpoint Access"
+      },
+      "arn": {
+        "type": "string",
+        "title": "Cluster ARN"
+      },
+      "endpoint": {
+        "type": "string",
+        "title": "API Server Endpoint"
+      },
+      "certificate_authority": {
+        "type": "string",
+        "title": "Certificate Authority Data"
+      },
+      "open_id_connect_issuer_url": {
+        "type": "string",
+        "title": "OIDC Issuer URL"
+      },
+      "cluster_security_group_id": {
+        "type": "string",
+        "title": "Cluster Security Group ID"
+      },
+      "deletion_protection": {
+        "type": "boolean",
+        "title": "Deletion Protection Enabled"
+      },
+      "subnet_ids": {
+        "type": "array",
+        "title": "Subnet IDs",
+        "items": {
+          "type": "string"
+        }
+      },
+      "security_group_ids": {
+        "type": "array",
+        "title": "Security Group IDs",
+        "items": {
+          "type": "string"
+        }
+      },
+      "public_access_cidrs": {
+        "type": "array",
+        "title": "Public Access CIDRs",
+        "items": {
+          "type": "string"
+        }
+      },
+      "kubernetes_network_config": {
+        "type": "object",
+        "title": "Kubernetes Network Config",
+        "additionalProperties": true
+      },
+      "logging": {
+        "type": "object",
+        "title": "Cluster Logging",
+        "additionalProperties": true
+      },
+      "upgrade_policy": {
+        "type": "object",
+        "title": "Upgrade Policy",
+        "additionalProperties": true
+      },
+      "access_config": {
+        "type": "object",
+        "title": "Access Config",
+        "additionalProperties": true
+      },
+      "tags": {
+        "type": "array",
+        "title": "Tags",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Key": {
+              "type": "string"
+            },
+            "Value": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": false,
+      "many": false
+    },
+    "region": {
+      "title": "AWS Region",
+      "target": "awsRegion",
+      "required": false,
+      "many": false
+    }
+  }
+}

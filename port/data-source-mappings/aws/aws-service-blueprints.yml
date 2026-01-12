@@ -1,0 +1,401 @@
+deleteDependentEntities: true
+createMissingRelatedEntities: true
+enableMergeEntity: true
+resources:
+  # When integration is installed into a single account,
+  # resource returns limited information
+  - kind: AWS::Organizations::Account
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Id
+          title: .Id
+          blueprint: '"awsAccount"'
+          properties:
+            account_id: .Id
+
+  # - kind: AWS::Organizations::Account
+  #   selector:
+  #     query: 'true'
+  #     useGetResourceAPI: 'true'
+  #   port:
+  #     entity:
+  #       mappings:
+  #         identifier: (.Properties.Id // .Id)
+  #         title: (.Properties.Name // .Properties.Id // .Id)
+  #         blueprint: '"awsAccount"'
+  #         properties:
+  #           account_id: (.Properties.Id // .Id)
+  #           name: (.Properties.Name // null)
+  #           arn: (.Properties.Arn // null)
+  #           email: (.Properties.Email // null)
+  #           status: (.Properties.Status // null)
+  #           joined_method: (.Properties.JoinedMethod // null)
+  #           joined_timestamp: >-
+  #             (.Properties.JoinedTimestamp // null) |
+  #             if . != null then sub(" "; "T") else null end
+  #           kind: .__Kind
+
+  - kind: AWS::IAM::Role
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.RoleName // .Identifier)
+          blueprint: '"iamRole"'
+          properties:
+            name: (.Properties.RoleName // .Identifier)
+            arn: (.Properties.Arn // null)
+            description: (.Properties.Description // null)
+            path: (.Properties.Path // null)
+            role_id: (.Properties.RoleId // null)
+            assume_role_policy_document: >-
+              (.Properties.AssumeRolePolicyDocument // null) |
+              if . == null then null
+              elif type == "string" then .
+              else tojson
+              end
+            max_session_duration: (.Properties.MaxSessionDuration // null)
+            permissions_boundary: (.Properties.PermissionsBoundary // null)
+            create_date: (.Properties.CreateDate // null)
+            last_used_date: (.Properties.RoleLastUsed?.LastUsedDate // null)
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::EC2::VPC
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+      regionPolicy:
+        allow:
+          - us-east-1
+          - us-east-2
+          - us-west-2
+          - eu-west-1
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Identifier
+          blueprint: '"ec2Vpc"'
+          properties:
+            vpc_id: (.Properties.VpcId // .Identifier)
+            name: >-
+              ((.Properties.Tags // []) 
+                | map(select(.Key == "Name") | .Value) 
+                | (if length > 0 then .[0] else null end))
+            cidr_block: (.Properties.CidrBlock // null)
+            tags: (.Properties.Tags // [])
+            # API does not provide ARN, construct
+            arn: >-
+              "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":vpc/" + .Identifier
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+            region: .__Region
+
+  - kind: AWS::EC2::Subnet
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+      regionPolicy:
+        allow:
+          - us-east-1
+          - us-east-2
+          - us-west-2
+          - eu-west-1
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Identifier
+          blueprint: '"ec2Subnet"'
+          properties:
+            subnet_id: (.Properties.SubnetId // .Identifier)
+            name: >-
+              ((.Properties.Tags // []) 
+                | map(select(.Key == "Name") | .Value) 
+                | (if length > 0 then .[0] else null end))
+            vpc_id: (.Properties.VpcId // null)
+            cidr_block: (.Properties.CidrBlock // null)
+            availability_zone: (.Properties.AvailabilityZone // null)
+            availability_zone_id: (.Properties.AvailabilityZoneId // null)
+            map_public_ip_on_launch: (.Properties.MapPublicIpOnLaunch // null)
+            assign_ipv6_address_on_creation: (.Properties.AssignIpv6AddressOnCreation // null)
+            tags: (.Properties.Tags // [])
+            arn: >-
+              "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":subnet/" + .Identifier
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+            region: .__Region
+            vpc: (.Properties.VpcId // null)
+
+  - kind: AWS::EC2::Instance
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: >-
+            ((.Properties.Tags // []) 
+              | map(select(.Key == "Name") | .Value) 
+              | if length > 0 then .[0] else .Identifier end)
+          blueprint: '"ec2Instance"'
+          properties:
+            instance_type: .Properties.InstanceType
+            state: .Properties.State.Name
+            public_ip_address: .Properties.PublicIpAddress
+            private_ip_address: .Properties.PrivateIpAddress
+            tags: .Properties.Tags
+            arn: >-
+              "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":instance/" + .Properties.InstanceId
+            kind: .__Kind
+            # link: >-
+            #   .Properties | select(.Arn != null) |
+            #   "https://console.aws.amazon.com/go/view?arn=" + .Arn
+          relations:
+            account: .__AccountId
+            region: .__Region
+            subnet: .Properties.SubnetId
+
+  - kind: AWS::ECS::Cluster
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.ClusterName
+          blueprint: '"ecsCluster"'
+          properties:
+            arn: .Properties.Arn
+            region: .__Region
+            name: .Properties.ClusterName
+            capacity_providers: (.Properties.CapacityProviders // [])
+            cluster_settings: (.Properties.ClusterSettings // [])
+            configuration: (.Properties.Configuration // null)
+            default_capacity_provider_strategy: (.Properties.DefaultCapacityProviderStrategy // [])
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::ECS::Service
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: (.Properties.ServiceArn // null)
+          title: (.Properties.ServiceName // .Identifier)
+          blueprint: '"ecsService"'
+          properties:
+            arn: (.Properties.Arn // null)
+            name: (.Properties.ServiceName // .Identifier)
+            cluster_arn: (.Properties.Cluster // null)
+            task_definition_arn: (.Properties.TaskDefinition // null)
+            launch_type: (.Properties.LaunchType // null)
+            scheduling_strategy: (.Properties.SchedulingStrategy // null)
+            desired_count: (.Properties.DesiredCount // null)
+            platform_version: (.Properties.PlatformVersion // null)
+            network_configuration: (.Properties.NetworkConfiguration // null)
+            capacity_provider_strategy: (.Properties.CapacityProviderStrategy // [])
+            propagate_tags: (.Properties.PropagateTags // null)
+            enable_execute_command: (.Properties.EnableExecuteCommand // null)
+            health_check_grace_period_seconds: (.Properties.HealthCheckGracePeriodSeconds // null)
+            region: .__Region
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::ECS::TaskDefinition
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.Family // .Identifier)
+          blueprint: '"ecsTaskDefinition"'
+          properties:
+            family: (.Properties.Family // null)
+            cpu: (.Properties.Cpu // null)
+            memory: (.Properties.Memory // null)
+            network_mode: (.Properties.NetworkMode // null)
+            requires_compatibilities: (.Properties.RequiresCompatibilities // [])
+            execution_role_arn: (.Properties.ExecutionRoleArn // null)
+            task_role_arn: (.Properties.TaskRoleArn // null)
+            container_definitions: (.Properties.ContainerDefinitions // [])
+            volumes: (.Properties.Volumes // [])
+            runtime_platform: (.Properties.RuntimePlatform // null)
+            ephemeral_storage: (.Properties.EphemeralStorage // null)
+            region: .__Region
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::Lambda::Function
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.FunctionName // .Identifier)
+          blueprint: '"lambdaFunction"'
+          properties:
+            name: (.Properties.FunctionName // .Identifier)
+            arn: (.Properties.FunctionArn // null)
+            runtime: (.Properties.Runtime // null)
+            role: (.Properties.Role // null)
+            handler: (.Properties.Handler // null)
+            description: (.Properties.Description // null)
+            timeout: (.Properties.Timeout // null)
+            memory_size: (.Properties.MemorySize // null)
+            code_size: (.Properties.CodeSize // null)
+            last_modified: (.Properties.LastModified // null)
+            package_type: (.Properties.PackageType // null)
+            architectures: (.Properties.Architectures // [])
+            kms_key_arn: (.Properties.KmsKeyArn // null)
+            tracing_config: (.Properties.TracingConfig // null)
+            vpc_config: (.Properties.VpcConfig // null)
+            environment_variables: (.Properties.Environment?.Variables // {})
+            layers: (.Properties.Layers // [])
+            logging_config: (.Properties.LoggingConfig // null)
+            ephemeral_storage: (.Properties.EphemeralStorage // null)
+            snap_start: (.Properties.SnapStart // null)
+            runtime_management_config: (.Properties.RuntimeManagementConfig // null)
+            region: .__Region
+            account_id: .__AccountId
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::ApiGateway::RestApi
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.Name // .Identifier)
+          blueprint: '"apiGatewayRestApi"'
+          properties:
+            name: (.Properties.Name // .Identifier)
+            rest_api_id: (.Properties.Id // null)
+            description: (.Properties.Description // null)
+            api_key_source_type: (.Properties.ApiKeySourceType // null)
+            endpoint_configuration: (.Properties.EndpointConfiguration // null)
+            policy: (.Properties.Policy // null)
+            minimum_compression_size: (.Properties.MinimumCompressionSize // null)
+            binary_media_types: (.Properties.BinaryMediaTypes // [])
+            region: .__Region
+            account_id: .__AccountId
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::S3::Bucket
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.BucketName // .Identifier)
+          blueprint: '"s3Bucket"'
+          properties:
+            name: (.Properties.BucketName // .Identifier)
+            arn: (.Properties.Arn // null)
+            region: >-
+              .Properties.RegionalDomainName |
+              capture(".*\\.(?<region>[^\\.]+)\\.amazonaws\\.com") | .region
+            public_access_block: (.Properties.PublicAccessBlockConfiguration // null)
+            versioning: (.Properties.VersioningConfiguration // null)
+            bucket_encryption: (.Properties.BucketEncryption // null)
+            logging: (.Properties.LoggingConfiguration // null)
+            lifecycle_configuration: (.Properties.LifecycleConfiguration.Rules // [])
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::EKS::Cluster
+    noExample: true # NOTE: what's this for?
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Properties.Name
+          title: .Properties.Name
+          blueprint: '"eksCluster"'
+          properties:
+            name: .Properties.Name
+            arn: (.Properties.Arn // null)
+            version: (.Properties.Version // null)
+            endpoint: (.Properties.Endpoint // null)
+            certificate_authority: (.Properties.CertificateAuthorityData // null)
+            deletion_protection: (.Properties.DeletionProtection // null)
+            role_arn: (.Properties.RoleArn // null)
+            open_id_connect_issuer_url: (.Properties.OpenIdConnectIssuerUrl // null)
+            cluster_security_group_id: (.Properties.ClusterSecurityGroupId // null)
+            subnet_ids: (.Properties.ResourcesVpcConfig?.SubnetIds // [])
+            security_group_ids: (.Properties.ResourcesVpcConfig?.SecurityGroupIds // [])
+            endpoint_public_access: (.Properties.ResourcesVpcConfig?.EndpointPublicAccess // null)
+            endpoint_private_access: (.Properties.ResourcesVpcConfig?.EndpointPrivateAccess // null)
+            public_access_cidrs: (.Properties.ResourcesVpcConfig?.PublicAccessCidrs // [])
+            tags: (.Properties.Tags // [])
+            kubernetes_network_config: (.Properties.KubernetesNetworkConfig // {})
+            access_config: (.Properties.AccessConfig // {})
+            upgrade_policy: (.Properties.UpgradePolicy // {})
+            logging: (.Properties.Logging // {})
+            kind: .__Kind
+          relations:
+            region: .__Region
+            account: .__AccountId
+
+  - kind: AWS::ECR::Repository
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.RepositoryName // .Identifier)
+          blueprint: '"ecrRepository"'
+          properties:
+            name: (.Properties.RepositoryName // .Identifier)
+            arn: (.Properties.Arn // null)
+            registry_id: (.Properties.RegistryId // null)
+            region: .__Region
+            image_tag_mutability: (.Properties.ImageTagMutability // null)
+            encryption_configuration: (.Properties.EncryptionConfiguration // null)
+            image_scanning_configuration: (.Properties.ImageScanningConfiguration // null)
+            lifecycle_policy: (.Properties.LifecyclePolicy // null)
+            repository_policy_text: (.Properties.RepositoryPolicyText // null)
+            tags: (.Properties.Tags // [])
+            kind: .__Kind
+          relations:
+            account: .__AccountId

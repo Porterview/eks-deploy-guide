@@ -1,0 +1,94 @@
+{
+  "identifier": "ecsCluster",
+  "title": "ECS Cluster",
+  "icon": "AWS",
+  "schema": {
+    "properties": {
+      "arn": {
+        "title": "ARN",
+        "description": "ECS Cluster ARN",
+        "type": "string"
+      },
+      "name": {
+        "title": "Cluster Name",
+        "description": "ECS cluster name",
+        "type": "string"
+      },
+      "region": {
+        "title": "Region",
+        "description": "AWS region",
+        "type": "string"
+      },
+      "capacity_providers": {
+        "title": "Capacity Providers",
+        "description": "Capacity providers associated with this cluster",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cluster_settings": {
+        "title": "Cluster Settings",
+        "description": "Raw ClusterSettings from ECS (e.g. containerInsights)",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "configuration": {
+        "title": "Configuration",
+        "description": "Execute command and logging configuration",
+        "type": "object"
+      },
+      "default_capacity_provider_strategy": {
+        "title": "Default Capacity Provider Strategy",
+        "description": "Default capacity provider strategy for the cluster",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "application_name": {
+        "title": "Application Name tag",
+        "description": "Value of the ApplicationName tag on the cluster",
+        "type": "string"
+      },
+      "environment_name": {
+        "title": "Environment tag",
+        "description": "Value of the Environment tag on the cluster",
+        "type": "string"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "All ECS cluster tags",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "kind": {
+        "title": "AWS Cloud Control API Kind",
+        "description": "The kind of the AWS Cloud Control API resource",
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "account": {
+      "title": "AWS Account",
+      "target": "awsAccount",
+      "required": true,
+      "many": false
+    },
+    "workload": {
+      "title": "Workload",
+      "target": "workload",
+      "required": false,
+      "many": true
+    }
+  }
+}
