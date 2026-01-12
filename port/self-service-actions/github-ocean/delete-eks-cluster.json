@@ -12,7 +12,7 @@
           "icon": "DefaultProperty",
           "title": "Region",
           "type": "string",
-          "blueprint": "region",
+          "blueprint": "awsRegion",
           "format": "entity"
         }
       },
