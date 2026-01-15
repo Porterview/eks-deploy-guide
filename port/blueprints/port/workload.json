@@ -1,0 +1,36 @@
+{
+  "identifier": "workload",
+  "title": "Workload",
+  "icon": "Deployment",
+  "ownership": {
+    "type": "Inherited",
+    "path": "service"
+  },
+  "schema": {
+    "properties": {
+      "version": {
+        "type": "string",
+        "title": "Version",
+        "description": "The version of the running service in this environment"
+      }
+    },
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {
+    "service": {
+      "title": "Service",
+      "target": "service",
+      "required": false,
+      "many": false
+    },
+    "environment": {
+      "title": "Environment",
+      "target": "environment",
+      "required": false,
+      "many": false
+    }
+  }
+}

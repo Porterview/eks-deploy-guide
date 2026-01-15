@@ -1,0 +1,13 @@
+{
+  "identifier": "environment",
+  "title": "Environment",
+  "icon": "Environment",
+  "schema": {
+    "properties": {},
+    "required": []
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {},
+  "relations": {}
+}
