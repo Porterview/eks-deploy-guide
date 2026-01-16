@@ -141,7 +141,7 @@
     "account": {
       "title": "AWS Account",
       "target": "awsAccount",
-      "required": true,
+      "required": false,
       "many": false
     },
     "region": {
