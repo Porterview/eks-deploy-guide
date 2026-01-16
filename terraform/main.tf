@@ -341,8 +341,6 @@ resource "port_entity" "eks_cluster" {
   relations = {
     single_relations = {
       "region" = var.region
-      "account" = data.aws_caller_identity.current.account_id
-      "cluster_role" = module.eks.cluster_iam_role_arn
     }
   }
 
