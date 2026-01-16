@@ -119,6 +119,18 @@
       "target": "workload",
       "required": false,
       "many": false
+    },
+    "execution_role": {
+      "title": "Execution IAM Role",
+      "target": "iamRole",
+      "required": false,
+      "many": false
+    },
+    "task_role": {
+      "title": "Task IAM Role",
+      "target": "iamRole",
+      "required": false,
+      "many": false
     }
   }
 }

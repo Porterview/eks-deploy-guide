@@ -113,6 +113,24 @@
       "required": true,
       "many": false
     },
+    "vpc": {
+      "title": "VPC",
+      "target": "ec2Vpc",
+      "required": false,
+      "many": false
+    },
+    "subnets": {
+      "title": "Subnets",
+      "target": "ec2Subnet",
+      "required": false,
+      "many": true
+    },
+    "cluster": {
+      "title": "ECS Cluster",
+      "target": "ecsCluster",
+      "required": true,
+      "many": true
+    },
     "workload": {
       "title": "Workload",
       "target": "workload",
@@ -124,12 +142,6 @@
       "target": "ecsTaskDefinition",
       "required": false,
       "many": false
-    },
-    "cluster": {
-      "title": "ECS Cluster",
-      "target": "ecsCluster",
-      "required": false,
-      "many": true
     }
   }
 }

@@ -172,6 +172,18 @@
       "target": "workload",
       "required": false,
       "many": false
+    },
+    "vpc": {
+      "title": "VPC",
+      "target": "ec2Vpc",
+      "required": false,
+      "many": false
+    },
+    "execution_role": {
+      "title": "Execution IAM Role",
+      "target": "iamRole",
+      "required": false,
+      "many": false
     }
   }
 }

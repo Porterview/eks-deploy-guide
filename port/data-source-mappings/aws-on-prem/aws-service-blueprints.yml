@@ -20,6 +20,16 @@
 # - Useful for limiting scope or reducing API calls
 # - Applied per-resource basis
 #
+# Region Entity Relations:
+# - Region entities are created automatically when resources reference them via `region: .__Region`
+# - Since regions are not AWS resources themselves, they cannot be discovered via AWS API
+## - Region entities should relate to accounts via the `account` relation
+## - This relation should be set via:
+##   1. Post-processing script that updates region entities with account relations
+##   2. Aggregation/calculation properties
+##   3. Manual configuration
+## - The account ID can be extracted from any resource's `__AccountId` field
+#
 deleteDependentEntities: true
 createMissingRelatedEntities: true
 enableMergeEntity: true
@@ -233,10 +243,19 @@ resources:
             arn: (.Properties.Arn // null)
             # Metadata
             kind: .__Kind
-            region: .__Region
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
+            region: .__Region
+            # ECS Cluster: Extract cluster name from ARN (format: arn:aws:ecs:REGION:ACCOUNT:cluster/CLUSTER_NAME)
+            cluster: >-
+              (.Properties.Cluster // null) |
+              if . != null then
+                capture("arn:aws:ecs:[^:]+:[^:]+:cluster/(?<clusterName>.+)") |
+                .clusterName
+              else
+                null
+              end
 
   - kind: AWS::ECS::Service
     selector:
@@ -271,6 +290,23 @@ resources:
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
+            # ECS Cluster: Extract cluster name from ARN (format: arn:aws:ecs:REGION:ACCOUNT:cluster/CLUSTER_NAME)
+            cluster: >-
+              (.Properties.Cluster // null) |
+              if . != null then
+                capture("arn:aws:ecs:[^:]+:[^:]+:cluster/(?<clusterName>.+)") |
+                .clusterName
+              else
+                null
+              end
+            # Subnets relation: Extract subnet IDs from network_configuration when using awsvpc mode
+            subnets: (.Properties.NetworkConfiguration?.AwsvpcConfiguration?.Subnets // [])
+            # VPC relation: Uses mirrored vpc_id property from first subnet
+            # The vpc_id is mirrored from the subnets relation via mirrorProperties
+            # Note: Since mirror properties are calculated after entity creation,
+            # the VPC relation will be populated after the mirror property is calculated
+            # This happens automatically when Port processes the mirror property
+            vpc: null
 
   - kind: AWS::ECS::TaskDefinition
     selector:
@@ -302,6 +338,24 @@ resources:
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
+            # Execution IAM Role: Extract role name from ARN (format: arn:aws:iam::ACCOUNT:role/ROLE_NAME)
+            execution_role: >-
+              (.Properties.ExecutionRoleArn // null) |
+              if . != null then
+                capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+                .roleName
+              else
+                null
+              end
+            # Task IAM Role: Extract role name from ARN (format: arn:aws:iam::ACCOUNT:role/ROLE_NAME)
+            task_role: >-
+              (.Properties.TaskRoleArn // null) |
+              if . != null then
+                capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+                .roleName
+              else
+                null
+              end
 
   # Lambda Resources
   - kind: AWS::Lambda::Function
@@ -346,6 +400,17 @@ resources:
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
+            # VPC relation: Extract VPC ID from vpc_config when Lambda is VPC-enabled
+            vpc: (.Properties.VpcConfig?.VpcId // null)
+            # Execution IAM Role: Extract role name from ARN (format: arn:aws:iam::ACCOUNT:role/ROLE_NAME)
+            execution_role: >-
+              (.Properties.Role // null) |
+              if . != null then
+                capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+                .roleName
+              else
+                null
+              end
 
   # API Gateway Resources
   - kind: AWS::ApiGateway::RestApi
@@ -447,6 +512,42 @@ resources:
           relations:
             account: .__AccountId
             region: .__Region
+            # Cluster IAM Role: Extract role name from ARN
+            cluster_role: >-
+              (.Properties.RoleArn // null) |
+              if . != null then
+                capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+                .roleName
+              else
+                null
+              end
+            # Subnets relation: Extract subnet IDs from ResourcesVpcConfig
+            subnets: (.Properties.ResourcesVpcConfig?.SubnetIds // [])
+            # VPC relation: Uses mirrored vpc_id property from first subnet
+            # The vpc_id is mirrored from the subnets relation via mirrorProperties
+            # Note: Since mirror properties are calculated after entity creation,
+            # the VPC relation will be populated after the mirror property is calculated
+            # This happens automatically when Port processes the mirror property
+            # vpc: null
+
+  - kind: AWS::EKS::Cluster
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Properties.Name
+          title: .Properties.Name
+          blueprint: '"awsResourceAggregation"'
+          properties:
+            # Core identifiers
+            name: (.Properties.Name // null)
+            # Core properties
+            # ARN
+            # Metadata
+            kind: .__Kind
+            tags: (.Properties.Tags // [])
+
 
   # ECR Resources
   - kind: AWS::ECR::Repository
