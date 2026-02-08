@@ -28,7 +28,7 @@
     "integrationActionExecutionProperties": {
       "org": "Porterview",
       "repo": "eks-deploy-guide",
-      "workflow": "port-integration-aws.yml",
+      "workflow": "port-integration-aws-helm.yml",
       "workflowInputs": {
         "cluster": "{{ .inputs.cluster.identifier }}",
         "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"
