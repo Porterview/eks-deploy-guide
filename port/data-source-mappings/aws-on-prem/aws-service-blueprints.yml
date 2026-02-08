@@ -113,6 +113,7 @@ resources:
   - kind: AWS::IAM::Role
     selector:
       query: 'true'
+      useGetResourceAPI: 'true'
     port:
       entity:
         mappings:
