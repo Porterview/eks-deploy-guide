@@ -1,0 +1,440 @@
+{
+  "identifier": "create_serverless_app",
+  "title": "Create Serverless Application",
+  "icon": "Lambda",
+  "description": "Provision a complete AWS serverless application stack with Lambda, API Gateway, DynamoDB, SQS, SNS, EventBridge, and CI/CD pipeline",
+  "trigger": {
+    "type": "self-service",
+    "operation": "CREATE",
+    "userInputs": {
+      "properties": {
+        "api_endpoints": {
+          "type": "array",
+          "title": "API Gateway Endpoints",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure API Gateway endpoints (all endpoints use Lambda authorizer and CORS)",
+          "visible": {
+            "jqQuery": "[\"api-lambda\", \"api-lambda-dynamodb\", \"api-lambda-dynamodb-sqs\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "api_gateway_authorizer_lambda": {
+          "type": "string",
+          "title": "Authorizer Lambda Function",
+          "description": "Lambda function name for API Gateway authorization (validates tokens/credentials)",
+          "visible": {
+            "jqQuery": "[\"api-lambda\", \"api-lambda-dynamodb\", \"api-lambda-dynamodb-sqs\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "application": {
+          "type": "string",
+          "title": "Select Application",
+          "format": "entity",
+          "description": "Select an existing application",
+          "blueprint": "application",
+          "visible": {
+            "jqQuery": ".form.application_mode == \"existing\""
+          }
+        },
+        "application_mode": {
+          "type": "string",
+          "title": "Application",
+          "default": "existing",
+          "description": "Select existing application or create a new one",
+          "enum": [
+            "existing",
+            "new"
+          ],
+          "enumColors": {
+            "existing": "blue",
+            "new": "green"
+          }
+        },
+        "aws_account": {
+          "type": "string",
+          "title": "AWS Account",
+          "description": "Target AWS account for resource deployment",
+          "enum": [
+            "learning",
+            "web-dev",
+            "web-tst",
+            "web-stg",
+            "web-prd"
+          ],
+          "enumColors": {
+            "learning": "lightGray",
+            "web-dev": "blue",
+            "web-prd": "red",
+            "web-stg": "yellow",
+            "web-tst": "turquoise"
+          }
+        },
+        "aws_region": {
+          "type": "string",
+          "title": "AWS Region",
+          "default": "us-west-2",
+          "description": "AWS region for resource deployment (defaults to us-west-2 from global config)",
+          "enum": [
+            "us-west-2",
+            "us-east-1",
+            "us-east-2"
+          ]
+        },
+        "datadog_notification_target": {
+          "type": "string",
+          "title": "Datadog Notification Target",
+          "default": "@slack-alerts",
+          "description": "Datadog notification target (e.g., @slack-alerts, @pagerduty-service, @email)",
+          "visible": {
+            "jqQuery": ".form.enable_datadog_monitors == true"
+          }
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "What does this service do?"
+        },
+        "dynamodb_tables": {
+          "type": "array",
+          "title": "DynamoDB Tables",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure DynamoDB tables (supports multiple tables)",
+          "visible": {
+            "jqQuery": "[\"api-lambda-dynamodb\", \"api-lambda-dynamodb-sqs\", \"sns-sqs-lambda\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "enable_codepipeline": {
+          "type": "boolean",
+          "title": "Enable CI/CD Pipeline",
+          "default": true,
+          "description": "Create CodePipeline and CodeBuild for automated deployments"
+        },
+        "enable_datadog_monitors": {
+          "type": "boolean",
+          "title": "Enable Datadog Monitors",
+          "default": true,
+          "description": "Create Datadog monitors for enabled resources"
+        },
+        "environmentName": {
+          "type": "string",
+          "title": "Environment Name",
+          "description": "Target deployment environment name",
+          "enum": [
+            "learning",
+            "dev",
+            "test",
+            "staging",
+            "prod"
+          ]
+        },
+        "eventbridge_rules": {
+          "type": "array",
+          "title": "EventBridge Rules",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure EventBridge rules (supports multiple rules)",
+          "visible": {
+            "jqQuery": "[\"eventbridge-lambda\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "eventbridge_schedulers": {
+          "type": "array",
+          "title": "EventBridge Schedulers",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure EventBridge Schedulers (supports multiple schedulers)",
+          "visible": {
+            "jqQuery": "[\"eventbridge-lambda\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "github_repository": {
+          "type": "string",
+          "title": "GitHub Repository",
+          "description": "GitHub repository name (org/repo format)",
+          "visible": {
+            "jqQuery": ".form.enable_codepipeline == true"
+          }
+        },
+        "lambda_additional_statements": {
+          "type": "array",
+          "title": "Custom IAM Policy Statements",
+          "items": {
+            "type": "object"
+          },
+          "description": "Additional IAM policy statements for Lambda functions",
+          "visible": {
+            "jqQuery": ".form.template != \"none\""
+          }
+        },
+        "lambda_functions": {
+          "type": "array",
+          "title": "Lambda Functions",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure Lambda functions (supports 10-15+ functions)",
+          "visible": {
+            "jqQuery": ".form.template != \"none\""
+          }
+        },
+        "new_application_business_unit": {
+          "type": "string",
+          "title": "Business Unit",
+          "description": "Business unit owning this application",
+          "enum": [
+            "Operations",
+            "DNA",
+            "Security",
+            "ERP",
+            "Digital",
+            "Integrations",
+            "WebDev",
+            "BusinessOffice",
+            "CorpFin",
+            "Other"
+          ],
+          "visible": {
+            "jqQuery": ".form.application_mode == \"new\""
+          }
+        },
+        "new_application_criticality": {
+          "type": "string",
+          "title": "Criticality Level",
+          "default": "medium",
+          "description": "Business criticality of the application",
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ],
+          "enumColors": {
+            "critical": "red",
+            "high": "orange",
+            "low": "green",
+            "medium": "yellow"
+          },
+          "visible": {
+            "jqQuery": ".form.application_mode == \"new\""
+          }
+        },
+        "new_application_description": {
+          "type": "string",
+          "title": "Application Description",
+          "description": "Description of the new application",
+          "visible": {
+            "jqQuery": ".form.application_mode == \"new\""
+          }
+        },
+        "new_application_name": {
+          "type": "string",
+          "title": "New Application Name",
+          "description": "Name for the new application",
+          "pattern": "^[a-z0-9-]+$",
+          "visible": {
+            "jqQuery": ".form.application_mode == \"new\""
+          }
+        },
+        "new_application_owner_team": {
+          "type": "string",
+          "title": "Owner Team",
+          "description": "Team responsible for this application",
+          "visible": {
+            "jqQuery": ".form.application_mode == \"new\""
+          }
+        },
+        "service_name": {
+          "type": "string",
+          "title": "Service Name",
+          "description": "Name of the service (lowercase alphanumeric with hyphens, e.g., order-processor, payment-validator)",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "sns_topics": {
+          "type": "array",
+          "title": "SNS Topics",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure SNS topics (supports multiple topics)",
+          "visible": {
+            "jqQuery": "[\"sns-sqs-lambda\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "sqs_queues": {
+          "type": "array",
+          "title": "SQS Queues",
+          "items": {
+            "type": "object"
+          },
+          "description": "Configure SQS queues (supports multiple queues)",
+          "visible": {
+            "jqQuery": "[\"api-lambda-dynamodb-sqs\", \"sqs-lambda\", \"sns-sqs-lambda\", \"custom\"] | contains([.form.template])"
+          }
+        },
+        "tag_costcenter": {
+          "type": "string",
+          "title": "Cost Center",
+          "description": "Cost center for billing",
+          "enum": [
+            "1410",
+            "1413",
+            "141A",
+            "141B",
+            "141C",
+            "141D",
+            "8102",
+            "8104",
+            "809W",
+            "809X",
+            "809Y",
+            "809Z",
+            "9206",
+            "920H",
+            "920T",
+            "920U",
+            "920V",
+            "920W",
+            "6004",
+            "1722",
+            "2112",
+            "1481"
+          ]
+        },
+        "tag_department": {
+          "type": "string",
+          "title": "Department",
+          "description": "Department owning this service",
+          "enum": [
+            "Operations",
+            "DNA",
+            "Security",
+            "ERP",
+            "Digital",
+            "Integrations",
+            "WebDev",
+            "BusinessOffice",
+            "CorpFin",
+            "Other"
+          ],
+          "enumColors": {
+            "BusinessOffice": "gold",
+            "CorpFin": "silver",
+            "DNA": "green",
+            "Digital": "orange",
+            "ERP": "purple",
+            "Integrations": "turquoise",
+            "Operations": "blue",
+            "Other": "lightGray",
+            "Security": "red",
+            "WebDev": "pink"
+          }
+        },
+        "tag_entity": {
+          "type": "string",
+          "title": "Entity Code",
+          "description": "Organization entity code for cost allocation",
+          "enum": [
+            "220",
+            "780",
+            "758",
+            "730",
+            "740",
+            "726",
+            "760",
+            "800",
+            "107"
+          ]
+        },
+        "tag_ticketid": {
+          "type": "string",
+          "title": "Ticket ID",
+          "description": "SNOW or JIRA ticket ID for this request"
+        },
+        "template": {
+          "type": "string",
+          "title": "Integration Template",
+          "default": "api-lambda",
+          "description": "Select a pre-configured integration pattern: api-lambda (REST API, 45% of apps), api-lambda-dynamodb (CRUD API, 25%), api-lambda-dynamodb-sqs (async processing, 15%), sqs-lambda (queue processing, 8%), eventbridge-lambda (event-driven, 4%), sns-sqs-lambda (pub/sub, 3%), custom (manual selection), none (configure later)",
+          "enum": [
+            "api-lambda",
+            "api-lambda-dynamodb",
+            "api-lambda-dynamodb-sqs",
+            "sqs-lambda",
+            "eventbridge-lambda",
+            "sns-sqs-lambda",
+            "custom",
+            "none"
+          ],
+          "enumColors": {
+            "api-lambda": "blue",
+            "api-lambda-dynamodb": "orange",
+            "api-lambda-dynamodb-sqs": "purple",
+            "custom": "lightGray",
+            "eventbridge-lambda": "turquoise",
+            "none": "darkGray",
+            "sns-sqs-lambda": "pink",
+            "sqs-lambda": "green"
+          }
+        }
+      },
+      "required": [
+        "service_name",
+        "tag_entity",
+        "description",
+        "aws_account",
+        "tag_department",
+        "tag_ticketid",
+        "tag_costcenter",
+        "application_mode",
+        "environmentName"
+      ]
+    },
+    "blueprintIdentifier": "serverless-app"
+  },
+  "invocationMethod": {
+    "type": "GITHUB",
+    "org": "mag-sandbox",
+    "repo": "mag-aws-platform-automation",
+    "workflow": "provision-serverless-app.yml",
+    "workflowInputs": {
+      "api_endpoints": "{{ .inputs.api_endpoints | toJson }}",
+      "api_gateway_authorizer_lambda": "{{ .inputs.api_gateway_authorizer_lambda }}",
+      "application": "{{ .inputs.application }}",
+      "application_mode": "{{ .inputs.application_mode }}",
+      "aws_account": "{{ .inputs.aws_account }}",
+      "aws_region": "{{ .inputs.aws_region }}",
+      "datadog_notification_target": "{{ .inputs.datadog_notification_target }}",
+      "description": "{{ .inputs.description }}",
+      "dynamodb_tables": "{{ .inputs.dynamodb_tables | toJson }}",
+      "enable_codepipeline": "{{ .inputs.enable_codepipeline }}",
+      "enable_datadog_monitors": "{{ .inputs.enable_datadog_monitors }}",
+      "environment": "{{ .inputs.environmentName }}",
+      "eventbridge_rules": "{{ .inputs.eventbridge_rules | toJson }}",
+      "eventbridge_schedulers": "{{ .inputs.eventbridge_schedulers | toJson }}",
+      "github_repository": "{{ .inputs.github_repository }}",
+      "lambda_additional_statements": "{{ .inputs.lambda_additional_statements | toJson }}",
+      "lambda_functions": "{{ .inputs.lambda_functions | toJson }}",
+      "new_application_business_unit": "{{ .inputs.new_application_business_unit }}",
+      "new_application_criticality": "{{ .inputs.new_application_criticality }}",
+      "new_application_description": "{{ .inputs.new_application_description }}",
+      "new_application_name": "{{ .inputs.new_application_name }}",
+      "new_application_owner_team": "{{ .inputs.new_application_owner_team }}",
+      "port_run_id": "{{ .run.id }}",
+      "service_name": "{{ .inputs.service_name }}",
+      "sns_topics": "{{ .inputs.sns_topics | toJson }}",
+      "sqs_queues": "{{ .inputs.sqs_queues | toJson }}",
+      "tag_costcenter": "{{ .inputs.tag_costcenter }}",
+      "tag_department": "{{ .inputs.tag_department }}",
+      "tag_entity": "{{ .inputs.tag_entity }}",
+      "tag_ticketid": "{{ .inputs.tag_ticketid }}",
+      "template": "{{ .inputs.template }}"
+    },
+    "reportWorkflowStatus": true
+  },
+  "requiredApproval": false
+}
