@@ -45,8 +45,8 @@
       },
       "kind": {
         "type": "string",
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource"
+        "title": "Cloud Control API Kind",
+        "description": "The AWS Cloud Control API resource kind"
       },
       "region": {
         "type": "string",

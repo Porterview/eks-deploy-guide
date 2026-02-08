@@ -1,8 +1,8 @@
 {
-  "identifier": "deploy_port_aws_helm",
-  "title": "Deploy Port integration: AWS",
+  "identifier": "deploy_port_k8s_helm",
+  "title": "Deploy Port integration: k8s",
   "icon": "Deployment",
-  "description": "Deploy Port's AWS integration via Helm",
+  "description": "Deploy Port's k8s integration via Helm",
   "trigger": {
     "type": "self-service",
     "operation": "CREATE",
@@ -27,8 +27,8 @@
     "integrationActionType": "dispatch_workflow",
     "integrationActionExecutionProperties": {
       "org": "Porterview",
-      "repo": "eks-deploy-guide",
-      "workflow": "port-integration-aws.yml",
+      "repo": "port-integration-k8s",
+      "workflow": "deploy-helm.yaml",
       "workflowInputs": {
         "cluster": "{{ .inputs.cluster.identifier }}",
         "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"

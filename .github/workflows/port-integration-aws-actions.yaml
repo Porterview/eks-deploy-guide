@@ -1,0 +1,25 @@
+# aws Exporter Workflow
+# This workflow responsible for running aws exporter.
+# aws_access_key_id: The AWS User Access Key ID used for authentication.
+# aws_secret_access_key: The AWS User Secret Access Key used for authentication.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */1 * * *' # Determines the scheduled interval for this workflow. This example runs every hour.
+
+jobs:
+  run-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30 # Set a time limit for the job
+    steps:
+      - name: Run AWS integration
+        uses: port-labs/ocean-sail@v1
+        with:
+          type: aws
+          port_client_id: ${{ secrets.PORT_CLIENT_ID }}
+          port_client_secret: ${{ secrets.PORT_CLIENT_SECRET }}
+          port_base_url: "https://api.port.io"
+          config: |
+            aws_access_key_id: ${{ secrets.awsAccessKeyId }}
+            aws_secret_access_key: ${{ secrets.awsSecretAccessKey }}

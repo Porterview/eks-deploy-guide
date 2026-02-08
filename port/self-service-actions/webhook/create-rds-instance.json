@@ -1,0 +1,327 @@
+{
+  "identifier": "create_rds_instance",
+  "title": "Create RDS Aurora Instance",
+  "icon": "Database",
+  "description": "Create a new RDS Aurora MySQL cluster instance via GitLab merge request",
+  "trigger": {
+    "type": "self-service",
+    "operation": "CREATE",
+    "userInputs": {
+      "properties": {
+        "project_name": {
+          "type": "string",
+          "title": "Project Name",
+          "description": "The project name (e.g., tfe-project1)",
+          "default": "tfe-project1"
+        },
+        "unit": {
+          "type": "string",
+          "title": "Unit",
+          "description": "Select a unit",
+          "format": "entity",
+          "blueprint": "unit"
+        },
+        "environment": {
+          "type": "string",
+          "title": "Environment",
+          "description": "Select an environment",
+          "format": "entity",
+          "blueprint": "environment",
+          "dependsOn": [
+            "unit"
+          ],
+          "dataset": {
+            "combinator": "and",
+            "rules": [
+              {
+                "operator": "relatedTo",
+                "blueprint": "unit",
+                "value": {
+                  "jqQuery": ".form.unit.identifier"
+                }
+              }
+            ]
+          }
+        },
+        "region": {
+          "type": "string",
+          "title": "Region",
+          "description": "Select a region",
+          "format": "entity",
+          "blueprint": "region",
+          "dependsOn": [
+            "unit"
+          ],
+          "dataset": {
+            "combinator": "and",
+            "rules": [
+              {
+                "operator": "relatedTo",
+                "blueprint": "unit",
+                "value": {
+                  "jqQuery": ".form.unit.identifier"
+                }
+              }
+            ]
+          }
+        },
+        "instance_name": {
+          "type": "string",
+          "title": "Instance Name",
+          "description": "Name for the RDS instance"
+        },
+        "engine_version": {
+          "type": "string",
+          "title": "Engine Version",
+          "description": "Aurora MySQL engine version",
+          "enum": [
+            "8.0.mysql_aurora.3.05.0",
+            "8.0.mysql_aurora.3.04.0",
+            "8.0.mysql_aurora.3.03.0",
+            "8.0.mysql_aurora.3.02.0"
+          ],
+          "default": "8.0.mysql_aurora.3.05.0"
+        },
+        "instance_class": {
+          "type": "string",
+          "title": "Instance Class",
+          "description": "RDS instance class",
+          "enum": [
+            "S (db.t3.small)",
+            "M (db.t3.medium)",
+            "L (db.t3.large)"
+          ],
+          "default": "M (db.t3.medium)"
+        },
+        "database_name": {
+          "type": "string",
+          "title": "Database Name",
+          "description": "Initial database name"
+        },
+        "admin_username": {
+          "type": "string",
+          "title": "Admin Username",
+          "description": "Master username for the database",
+          "default": "admin"
+        },
+        "auto_manage_master_password": {
+          "type": "boolean",
+          "title": "Auto Manage Master Password",
+          "description": "Let AWS manage the master password",
+          "default": true
+        },
+        "enable_advanced_config": {
+          "type": "boolean",
+          "title": "Advanced Configuration",
+          "description": "Enable advanced configuration options",
+          "default": false
+        },
+        "backup_retention_period": {
+          "type": "number",
+          "title": "Backup Retention Period",
+          "description": "Number of days to retain backups",
+          "default": 7,
+          "minimum": 0,
+          "maximum": 35
+        },
+        "preferred_backup_window": {
+          "type": "string",
+          "title": "Preferred Backup Window",
+          "description": "Time window for automated backups (UTC, e.g., 03:00-04:00)",
+          "default": "03:00-04:00"
+        },
+        "preferred_maintenance_window": {
+          "type": "string",
+          "title": "Preferred Maintenance Window",
+          "description": "Time window for maintenance (UTC, e.g., mon:04:00-mon:05:00)",
+          "default": "mon:04:00-mon:05:00"
+        },
+        "deletion_protection": {
+          "type": "boolean",
+          "title": "Deletion Protection",
+          "description": "Enable deletion protection",
+          "default": false
+        },
+        "enable_encryption": {
+          "type": "boolean",
+          "title": "Enable Encryption",
+          "description": "Enable storage encryption",
+          "default": true
+        },
+        "backup_policy": {
+          "type": "string",
+          "title": "Backup Policy",
+          "description": "Backup policy tag",
+          "enum": [
+            "sr::prod",
+            "sr::dev",
+            "sr::test"
+          ],
+          "default": "sr::prod"
+        },
+        "sub_project": {
+          "type": "string",
+          "title": "Sub Project",
+          "description": "Sub-project identifier"
+        },
+        "source_repo": {
+          "type": "string",
+          "title": "Source Repository",
+          "description": "Select a GitLab repository",
+          "format": "entity",
+          "blueprint": "gitlabRepository",
+          "dependsOn": [
+            "unit"
+          ],
+          "dataset": {
+            "combinator": "and",
+            "rules": [
+              {
+                "operator": "relatedTo",
+                "blueprint": "unit",
+                "value": {
+                  "jqQuery": ".form.unit.identifier"
+                }
+              }
+            ]
+          }
+        },
+        "instances": {
+          "type": "object",
+          "title": "Instances Configuration",
+          "description": "JSON object defining instance configuration",
+          "default": {
+            "one": {},
+            "two": {}
+          }
+        },
+        "vpc": {
+          "type": "string",
+          "title": "VPC",
+          "description": "Select a VPC",
+          "format": "entity",
+          "blueprint": "vpc",
+          "dependsOn": [
+            "unit"
+          ],
+          "dataset": {
+            "combinator": "and",
+            "rules": [
+              {
+                "operator": "relatedTo",
+                "blueprint": "unit",
+                "value": {
+                  "jqQuery": ".form.unit.identifier"
+                }
+              }
+            ]
+          }
+        },
+        "subnet_ids": {
+          "type": "array",
+          "title": "Subnet IDs",
+          "description": "List of subnet IDs for DB subnet group",
+          "items": {
+            "type": "string"
+          }
+        },
+        "security_group_ids": {
+          "type": "array",
+          "title": "Security Group IDs",
+          "description": "List of security group IDs",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "project_name",
+        "unit",
+        "environment",
+        "region",
+        "instance_name",
+        "database_name",
+        "vpc"
+      ],
+      "steps": [
+        {
+          "title": "Basic Configuration",
+          "order": [
+            "project_name",
+            "unit",
+            "environment",
+            "region",
+            "instance_name",
+            "instance_class",
+            "engine_version",
+            "database_name",
+            "admin_username",
+            "auto_manage_master_password",
+            "vpc",
+            "source_repo",
+            "enable_advanced_config"
+          ]
+        },
+        {
+          "title": "Advanced Configuration",
+          "order": [
+            "backup_retention_period",
+            "preferred_backup_window",
+            "preferred_maintenance_window",
+            "deletion_protection",
+            "enable_encryption",
+            "backup_policy",
+            "sub_project",
+            "subnet_ids",
+            "security_group_ids",
+            "instances"
+          ],
+          "visible": {
+            "jqQuery": ".form.enable_advanced_config == true"
+          }
+        }
+      ]
+    }
+  },
+  "invocationMethod": {
+    "type": "WEBHOOK",
+    "url": "https://gitlab.com/api/v4/projects/${GITLAB_PROJECT_ID}/ref/main/trigger/pipeline?token=${GITLAB_TRIGGER_TOKEN}",
+    "agent": false,
+    "synchronized": false,
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "ref": "main",
+      "variables": {
+        "TRIGGER_PAYLOAD": "{{ . | toJson }}",
+        "PORT_RUN_ID": "{{ .run.id }}",
+        "PORT_ENTITY": "{{ .entity.identifier }}",
+        "PROJECT_NAME": "{{ .inputs.project_name }}",
+        "UNIT": "{{ .inputs.unit }}",
+        "ENVIRONMENT": "{{ .inputs.environment.name }}",
+        "REGION": "{{ .inputs.region.name }}",
+        "INSTANCE_NAME": "{{ .inputs.instance_name }}",
+        "ENGINE_VERSION": "{{ .inputs.engine_version }}",
+        "INSTANCE_CLASS": "{{ .inputs.instance_class }}",
+        "DATABASE_NAME": "{{ .inputs.database_name }}",
+        "ADMIN_USERNAME": "{{ .inputs.admin_username }}",
+        "AUTO_MANAGE_MASTER_PASSWORD": "{{ .inputs.auto_manage_master_password }}",
+        "BACKUP_RETENTION_PERIOD": "{{ .inputs.backup_retention_period }}",
+        "PREFERRED_BACKUP_WINDOW": "{{ .inputs.preferred_backup_window }}",
+        "PREFERRED_MAINTENANCE_WINDOW": "{{ .inputs.preferred_maintenance_window }}",
+        "DELETION_PROTECTION": "{{ .inputs.deletion_protection }}",
+        "ENABLE_ENCRYPTION": "{{ .inputs.enable_encryption }}",
+        "BACKUP_POLICY": "{{ .inputs.backup_policy }}",
+        "SUB_PROJECT": "{{ .inputs.sub_project }}",
+        "SOURCE_REPO": "{{ .inputs.source_repo.url }}",
+        "VPC_ID": "{{ .inputs.vpc.vpc_id }}",
+        "SUBNET_IDS": "{{ .inputs.subnet_ids | toJson }}",
+        "SECURITY_GROUP_IDS": "{{ .inputs.security_group_ids | toJson }}",
+        "INSTANCES": "{{ .inputs.instances | toJson }}"
+      }
+    }
+  },
+  "requiredApproval": false
+}

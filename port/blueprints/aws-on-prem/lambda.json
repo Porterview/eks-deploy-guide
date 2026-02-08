@@ -118,8 +118,8 @@
       },
       "kind": {
         "type": "string",
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource"
+        "title": "Cloud Control API Kind",
+        "description": "The AWS Cloud Control API resource kind"
       },
       "region": {
         "type": "string",
@@ -170,6 +170,18 @@
     "workload": {
       "title": "Workload",
       "target": "workload",
+      "required": false,
+      "many": false
+    },
+    "vpc": {
+      "title": "VPC",
+      "target": "ec2Vpc",
+      "required": false,
+      "many": false
+    },
+    "execution_role": {
+      "title": "Execution IAM Role",
+      "target": "iamRole",
       "required": false,
       "many": false
     }

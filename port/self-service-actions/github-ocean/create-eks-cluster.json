@@ -18,7 +18,8 @@
           "type": "string",
           "blueprint": "awsRegion",
           "title": "Region",
-          "format": "entity"
+          "format": "entity",
+          "default": "us-east-2"
         }
       },
       "required": [

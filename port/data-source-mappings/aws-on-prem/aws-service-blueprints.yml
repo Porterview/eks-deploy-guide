@@ -20,6 +20,16 @@
 # - Useful for limiting scope or reducing API calls
 # - Applied per-resource basis
 #
+# Region Entity Relations:
+# - Region entities are created automatically when resources reference them via `region: .__Region`
+# - Since regions are not AWS resources themselves, they cannot be discovered via AWS API
+## - Region entities should relate to accounts via the `account` relation
+## - This relation should be set via:
+##   1. Post-processing script that updates region entities with account relations
+##   2. Aggregation/calculation properties
+##   3. Manual configuration
+## - The account ID can be extracted from any resource's `__AccountId` field
+#
 deleteDependentEntities: true
 createMissingRelatedEntities: true
 enableMergeEntity: true
@@ -100,6 +110,25 @@ resources:
           relations:
             account: .__AccountId
 
+  - kind: AWS::IAM::Role
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.RoleName // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.RoleName // .Identifier)
+            arn: (.Properties.Arn // null)
+            kind: .__Kind
+            # region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+
   # EC2 Resources
   - kind: AWS::EC2::VPC
     selector:
@@ -135,6 +164,35 @@ resources:
           relations:
             account: .__AccountId
             region: .__Region
+
+  - kind: AWS::EC2::VPC
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+      regionPolicy:
+        allow:
+          - us-east-1
+          - us-east-2
+          - us-west-2
+          - eu-west-1
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Identifier
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: >-
+              ((.Properties.Tags // []) 
+                | map(select(.Key == "Name") | .Value) 
+                | (if length > 0 then .[0] else null end))
+            arn: >-
+              "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":vpc/" + .Identifier
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
 
   - kind: AWS::EC2::Subnet
     selector:
@@ -177,6 +235,35 @@ resources:
             region: .__Region
             vpc: (.Properties.VpcId // null)
 
+  - kind: AWS::EC2::Subnet
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+      regionPolicy:
+        allow:
+          - us-east-1
+          - us-east-2
+          - us-west-2
+          - eu-west-1
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Identifier
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: >-
+              ((.Properties.Tags // []) 
+                | map(select(.Key == "Name") | .Value) 
+                | (if length > 0 then .[0] else null end))
+            arn: >-
+              "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":subnet/" + .Identifier
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+
   # Note: EC2 Instance does not use useGetResourceAPI as the ListResources API
   # provides sufficient property data for basic instance information
   - kind: AWS::EC2::Instance
@@ -210,6 +297,31 @@ resources:
             region: .__Region
             subnet: (.Properties.SubnetId // null)
 
+  - kind: AWS::EC2::Instance
+    selector:
+      query: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: >-
+            ((.Properties.Tags // []) 
+              | map(select(.Key == "Name") | .Value) 
+              | (if length > 0 then .[0] else .Identifier end))
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: >-
+              ((.Properties.Tags // []) 
+                | map(select(.Key == "Name") | .Value) 
+                | (if length > 0 then .[0] else null end))
+            arn: >-
+              "arn:aws:ec2:" + .__Region + ":" + .__AccountId + ":instance/" + .Properties.InstanceId
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+
   # ECS Resources
   - kind: AWS::ECS::Cluster
     selector:
@@ -232,6 +344,34 @@ resources:
             # ARN
             arn: (.Properties.Arn // null)
             # Metadata
+            kind: .__Kind
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+            region: .__Region
+            # ECS Cluster: Extract cluster name from ARN (format: arn:aws:ecs:REGION:ACCOUNT:cluster/CLUSTER_NAME)
+            # cluster: >-
+            #   (.Properties.Cluster // null) |
+            #   if . != null then
+            #     capture("arn:aws:ecs:[^:]+:[^:]+:cluster/(?<clusterName>.+)") |
+            #     .clusterName
+            #   else
+            #     null
+            #   end
+
+  - kind: AWS::ECS::Cluster
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: .Properties.ClusterName
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.ClusterName // null)
+            arn: (.Properties.Arn // null)
             kind: .__Kind
             region: .__Region
             tags: (.Properties.Tags // [])
@@ -271,6 +411,42 @@ resources:
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
+            # ECS Cluster: Extract cluster name from ARN (format: arn:aws:ecs:REGION:ACCOUNT:cluster/CLUSTER_NAME)
+            # cluster: >-
+            #   (.Properties.Cluster // null) |
+            #   if . != null then
+            #     capture("arn:aws:ecs:[^:]+:[^:]+:cluster/(?<clusterName>.+)") |
+            #     .clusterName
+            #   else
+            #     null
+            #   end
+            # # Subnets relation: Extract subnet IDs from network_configuration when using awsvpc mode
+            # subnets: (.Properties.NetworkConfiguration?.AwsvpcConfiguration?.Subnets // [])
+            # # VPC relation: Uses mirrored vpc_id property from first subnet
+            # # The vpc_id is mirrored from the subnets relation via mirrorProperties
+            # # Note: Since mirror properties are calculated after entity creation,
+            # # the VPC relation will be populated after the mirror property is calculated
+            # # This happens automatically when Port processes the mirror property
+            # vpc: null
+
+  - kind: AWS::ECS::Service
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: (.Properties.ServiceArn // null)
+          title: (.Properties.ServiceName // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.ServiceName // .Identifier)
+            arn: (.Properties.Arn // null)
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
 
   - kind: AWS::ECS::TaskDefinition
     selector:
@@ -297,6 +473,43 @@ resources:
             runtime_platform: (.Properties.RuntimePlatform // null)
             ephemeral_storage: (.Properties.EphemeralStorage // null)
             # Metadata
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+            # Execution IAM Role: Extract role name from ARN (format: arn:aws:iam::ACCOUNT:role/ROLE_NAME)
+            # execution_role: >-
+            #   (.Properties.ExecutionRoleArn // null) |
+            #   if . != null then
+            #     capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+            #     .roleName
+            #   else
+            #     null
+            #   end
+            # # Task IAM Role: Extract role name from ARN (format: arn:aws:iam::ACCOUNT:role/ROLE_NAME)
+            # task_role: >-
+            #   (.Properties.TaskRoleArn // null) |
+            #   if . != null then
+            #     capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+            #     .roleName
+            #   else
+            #     null
+            #   end
+
+  - kind: AWS::ECS::TaskDefinition
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.Family // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.Family // .Identifier)
+            # arn: (.Properties.FunctionArn // null)
             kind: .__Kind
             region: .__Region
             tags: (.Properties.Tags // [])
@@ -346,6 +559,36 @@ resources:
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
+            # VPC relation: Extract VPC ID from vpc_config when Lambda is VPC-enabled
+            vpc: (.Properties.VpcConfig?.VpcId // null)
+            # Execution IAM Role: Extract role name from ARN (format: arn:aws:iam::ACCOUNT:role/ROLE_NAME)
+            # execution_role: >-
+            #   (.Properties.Role // null) |
+            #   if . != null then
+            #     capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+            #     .roleName
+            #   else
+            #     null
+            #   end
+
+  - kind: AWS::Lambda::Function
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.FunctionName // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.FunctionName // .Identifier)
+            arn: (.Properties.FunctionArn // null)
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
 
   # API Gateway Resources
   - kind: AWS::ApiGateway::RestApi
@@ -373,6 +616,25 @@ resources:
             kind: .__Kind
             region: .__Region
             account_id: .__AccountId
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::ApiGateway::RestApi
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.Name // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.Name // .Identifier)
+            # arn: (.Properties.Arn // null)
+            kind: .__Kind
+            region: .__Region
             tags: (.Properties.Tags // [])
           relations:
             account: .__AccountId
@@ -408,6 +670,25 @@ resources:
           relations:
             account: .__AccountId
 
+  - kind: AWS::S3::Bucket
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.BucketName // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.BucketName // .Identifier)
+            arn: (.Properties.Arn // null)
+            kind: .__Kind
+            # region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+
   # EKS Resources
   - kind: AWS::EKS::Cluster
     selector:
@@ -416,7 +697,7 @@ resources:
     port:
       entity:
         mappings:
-          identifier: .Properties.Name
+          identifier: .Properties.Arn
           title: .Properties.Name
           blueprint: '"eksCluster"'
           properties:
@@ -430,7 +711,7 @@ resources:
             role_arn: (.Properties.RoleArn // null)
             open_id_connect_issuer_url: (.Properties.OpenIdConnectIssuerUrl // null)
             cluster_security_group_id: (.Properties.ClusterSecurityGroupId // null)
-            subnet_ids: (.Properties.ResourcesVpcConfig?.SubnetIds // [])
+            # subnet_ids: (.Properties.ResourcesVpcConfig?.SubnetIds // []) ##TODO: subnet_ids vs subnets?
             security_group_ids: (.Properties.ResourcesVpcConfig?.SecurityGroupIds // [])
             endpoint_public_access: (.Properties.ResourcesVpcConfig?.EndpointPublicAccess // null)
             endpoint_private_access: (.Properties.ResourcesVpcConfig?.EndpointPrivateAccess // null)
@@ -447,6 +728,42 @@ resources:
           relations:
             account: .__AccountId
             region: .__Region
+            # Subnets relation: Extract subnet IDs from ResourcesVpcConfig
+            subnets: (.Properties.ResourcesVpcConfig?.SubnetIds // [])
+            # Cluster IAM Role: Extract role name from ARN
+            # cluster_role: >-
+            #   (.Properties.RoleArn // null) |
+            #   if . != null then
+            #     capture("arn:aws:iam::[^:]+:role/(?<roleName>.+)") |
+            #     .roleName
+            #   else
+            #     null
+            #   end
+            # # VPC relation: Uses mirrored vpc_id property from first subnet
+            # # The vpc_id is mirrored from the subnets relation via mirrorProperties
+            # # Note: Since mirror properties are calculated after entity creation,
+            # # the VPC relation will be populated after the mirror property is calculated
+            # # This happens automatically when Port processes the mirror property
+            # # vpc: null
+
+  - kind: AWS::EKS::Cluster
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Properties.Arn
+          title: .Properties.Name
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.Name // null)
+            arn: (.Properties.Arn // null)
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
 
   # ECR Resources
   - kind: AWS::ECR::Repository
@@ -472,6 +789,25 @@ resources:
             # ARN
             arn: (.Properties.Arn // null)
             # Metadata
+            kind: .__Kind
+            region: .__Region
+            tags: (.Properties.Tags // [])
+          relations:
+            account: .__AccountId
+
+  - kind: AWS::ECR::Repository
+    selector:
+      query: 'true'
+      useGetResourceAPI: 'true'
+    port:
+      entity:
+        mappings:
+          identifier: .Identifier
+          title: (.Properties.RepositoryName // .Identifier)
+          blueprint: '"awsCloudResource"'
+          properties:
+            name: (.Properties.RepositoryName // .Identifier)
+            arn: (.Properties.Arn // null)
             kind: .__Kind
             region: .__Region
             tags: (.Properties.Tags // [])

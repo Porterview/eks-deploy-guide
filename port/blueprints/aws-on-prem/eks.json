@@ -105,8 +105,8 @@
       },
       "kind": {
         "type": "string",
-        "title": "AWS Cloud Control API Kind",
-        "description": "The kind of the AWS Cloud Control API resource"
+        "title": "Cloud Control API Kind",
+        "description": "The AWS Cloud Control API resource kind"
       },
       "tags": {
         "type": "array",
@@ -147,6 +147,24 @@
     "region": {
       "title": "AWS Region",
       "target": "awsRegion",
+      "required": false,
+      "many": false
+    },
+    "vpc": {
+      "title": "VPC",
+      "target": "ec2Vpc",
+      "required": false,
+      "many": false
+    },
+    "subnets": {
+      "title": "Subnets",
+      "target": "ec2Subnet",
+      "required": false,
+      "many": true
+    },
+    "cluster_role": {
+      "title": "Cluster IAM Role",
+      "target": "iamRole",
       "required": false,
       "many": false
     }

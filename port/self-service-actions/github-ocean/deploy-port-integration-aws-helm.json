@@ -1,0 +1,41 @@
+{
+  "identifier": "deploy_port_aws_helm",
+  "title": "Deploy Port integration: AWS",
+  "icon": "Deployment",
+  "description": "Deploy Port's AWS integration via Helm",
+  "trigger": {
+    "type": "self-service",
+    "operation": "CREATE",
+    "userInputs": {
+      "properties": {
+        "cluster": {
+          "icon": "DefaultProperty",
+          "title": "EKS Cluster",
+          "description": "Select the EKS cluster for deployment",
+          "type": "string",
+          "blueprint": "eksCluster",
+          "format": "entity"
+        }
+      },
+      "required": [],
+      "order": []
+    }
+  },
+  "invocationMethod": {
+    "type": "INTEGRATION_ACTION",
+    "installationId": "gh-ocean",
+    "integrationActionType": "dispatch_workflow",
+    "integrationActionExecutionProperties": {
+      "org": "Porterview",
+      "repo": "eks-deploy-guide",
+      "workflow": "port-integration-aws-helm.yml",
+      "workflowInputs": {
+        "cluster": "{{ .inputs.cluster.identifier }}",
+        "port_context": "{\"entity\": {{ .entity | toJson }}, \"blueprint\": \"{{ .action.blueprint }}\", \"runId\": \"{{ .run.id }}\", \"trigger\": {{ .trigger | toJson }}}"
+      },
+      "reportWorkflowStatus": true
+    }
+  },
+  "requiredApproval": false,
+  "allowAnyoneToViewRuns": true
+}
